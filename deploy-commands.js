@@ -22,6 +22,10 @@ const commands = [
         .addSubcommand(subcommand =>
             subcommand
             .setName('open')
+            .setDescription('Open a ticket')) //TODO: add so a tutor or tutors can be specified
+        .addSubcommand(subcommand =>
+            subcommand
+            .setName('open')
             .setDescription('Open a ticket'))
         /*.addSubcommand(subcommand =>
             subcommand

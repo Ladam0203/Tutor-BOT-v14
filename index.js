@@ -27,18 +27,18 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 
-			let ticketId = makeTicketId();
+			let ticketChannelName = "ticket-" + makeTicketId();
 
-			var openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets" && c.type === 4);
-			var studentsRole = interaction.guild.roles.cache.find(r => r.name === 'Student');
+			var openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
+			var studentRole = interaction.guild.roles.cache.find(r => r.name === 'Student');
 
-			interaction.guild.channels.create({
-				name: ticketId,
+			await interaction.guild.channels.create({
+				name: ticketChannelName,
 				type: 0,
 				parent: openTicketCategory.id,
 				permissionOverwrites : [
 					{
-						id: studentsRole.id,
+						id: studentRole.id,
 						deny: [PermissionsBitField.Flags.ViewChannel],
 					},
 					{
@@ -48,7 +48,14 @@ client.on('interactionCreate', async interaction => {
 				],
 			});
 
-			await interaction.reply({ content: "Your ticket has been created under the " + openTicketCategory.name + " category, with the name " + ticketId + "!", ephemeral: true });
+			await interaction.reply({ content: "Your ticket has been created under the " + openTicketCategory.name + " category, with the name " + ticketChannelName + "!", ephemeral: true });
+
+			const ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
+			await ticketChannel.send({ content: "Please elaborate on your question while we find a tutor to assist you!", ephemeral: true });
+
+			var tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
+			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
+			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! " + interaction.user.tag + " needs assistance in " + ticketChannelName + "!");
 		}
 	}
 
