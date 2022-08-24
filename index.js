@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector } = require('discord.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
@@ -17,7 +17,7 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
-	const { commandName, member } = interaction;
+	const { commandName} = interaction;
 
 	if (commandName === 'ticket') {
 		if (interaction.options.getSubcommand() === 'open') {
@@ -30,7 +30,6 @@ client.on('interactionCreate', async interaction => {
 			let ticketChannelName = "ticket-" + makeTicketId();
 
 			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
-			const everyoneRole = interaction.guild.roles.cache.find(r => r.name === '@everyone');
 
 			await interaction.guild.channels.create({
 				name: ticketChannelName,
@@ -42,7 +41,7 @@ client.on('interactionCreate', async interaction => {
 						allow: [PermissionsBitField.Flags.ViewChannel],
 					},
 					{
-						id: everyoneRole.id,
+						id: interaction.channel.guild.roles.everyone.id,
 						deny: [PermissionsBitField.Flags.ViewChannel],
 					}
 				],
@@ -75,6 +74,21 @@ client.on('interactionCreate', async interaction => {
 			interaction.channel.setParent(ongoingTicketsCategory)
 			//announce who came to help
 			await interaction.reply(interaction.user.tag + " is here to help!");
+		}
+
+		if (interaction.options.getSubcommand() === 'close') {
+			//check channel
+			if ((!interaction.channel.name.includes("ticket") || interaction.channel.name === "ticket-opened-ping") || interaction.channel.parent.name !== "Ongoing Tickets") { //TODO: write a regex 
+				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
+				return;
+			}
+			//move ticket to closed
+			let closedTicketsCategory = client.channels.cache.find(c => c.name === "Closed Tickets")
+			interaction.channel.setParent(closedTicketsCategory)
+			//make it read only
+			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
+			//announce who came to help
+			await interaction.reply("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!");
 		}
 	}
 

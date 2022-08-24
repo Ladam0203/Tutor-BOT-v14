@@ -22,15 +22,15 @@ const commands = [
         .addSubcommand(subcommand =>
             subcommand
             .setName('open')
-            .setDescription('Open a ticket')) //TODO: add so a tutor or tutors can be specified
+            .setDescription('Opens a ticket')) //TODO: add so a tutor or tutors can be specified
         .addSubcommand(subcommand =>
             subcommand
             .setName('take')
-            .setDescription('Marks a ticket as "ongoing" and announces who came to assist'))
-        /*.addSubcommand(subcommand =>
+            .setDescription('Marks an open ticket as ongoing and announces who came to assist'))
+        .addSubcommand(subcommand =>
             subcommand
-            .setName('publish')
-            .setDescription('Publish a ticket')*/
+            .setName('close')
+            .setDescription('Closes an ongoing ticket'))
 ]
 	.map(command => command.toJSON());
 
