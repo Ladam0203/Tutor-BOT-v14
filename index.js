@@ -53,9 +53,20 @@ client.on('interactionCreate', async interaction => {
 			const ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 			await ticketChannel.send({ content: "Please elaborate on your question while we find a tutor to assist you!", ephemeral: true });
 
-			var tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
+			let tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
 			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
 			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! " + interaction.user.tag + " needs assistance in " + ticketChannelName + "!");
+		}
+
+		if (interaction.options.getSubcommand() === 'take') {
+			//check permission
+			//check channel (if is a ticket)
+
+			//move ticket to ongoing
+			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "Ongoing Tickets")
+			interaction.channel.setParent(ongoingTicketsCategory)
+			//announce who came to help
+			await interaction.reply(interaction.user.tag + " is here to help!");
 		}
 	}
 

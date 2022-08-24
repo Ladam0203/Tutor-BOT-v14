@@ -25,8 +25,8 @@ const commands = [
             .setDescription('Open a ticket')) //TODO: add so a tutor or tutors can be specified
         .addSubcommand(subcommand =>
             subcommand
-            .setName('open')
-            .setDescription('Open a ticket'))
+            .setName('take')
+            .setDescription('Marks a ticket as "ongoing" and announces who came to assist'))
         /*.addSubcommand(subcommand =>
             subcommand
             .setName('publish')
