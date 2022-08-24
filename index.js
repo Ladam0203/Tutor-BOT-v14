@@ -59,8 +59,8 @@ client.on('interactionCreate', async interaction => {
 		}
 
 		if (interaction.options.getSubcommand() === 'take') {
-			//check permission
-			//check channel (if is a ticket)
+			//check permission (Tutor role)
+			//check channel (if it is an open ticket)
 
 			//move ticket to ongoing
 			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "Ongoing Tickets")
