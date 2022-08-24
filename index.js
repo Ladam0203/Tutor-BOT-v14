@@ -30,7 +30,7 @@ client.on('interactionCreate', async interaction => {
 			let ticketChannelName = "ticket-" + makeTicketId();
 
 			var openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
-			var studentRole = interaction.guild.roles.cache.find(r => r.name === 'Student');
+			var everyoneRole = interaction.guild.roles.cache.find(r => r.name === '@everyone');
 
 			await interaction.guild.channels.create({
 				name: ticketChannelName,
@@ -38,12 +38,12 @@ client.on('interactionCreate', async interaction => {
 				parent: openTicketCategory.id,
 				permissionOverwrites : [
 					{
-						id: studentRole.id,
-						deny: [PermissionsBitField.Flags.ViewChannel],
-					},
-					{
 						id: interaction.user.id,
 						allow: [PermissionsBitField.Flags.ViewChannel],
+					},
+					{
+						id: everyoneRole.id,
+						deny: [PermissionsBitField.Flags.ViewChannel],
 					}
 				],
 			});
