@@ -11,26 +11,23 @@ rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
 
 //Recreating new commands
 const commands = [
-	new SlashCommandBuilder().setName('ping')
-        .setDescription('Replies with pong!'),
-	new SlashCommandBuilder().setName('server')
-        .setDescription('Replies with server info!'),
-    new SlashCommandBuilder().setName('user')
-        .setDescription('Replies with user info!'),
     new SlashCommandBuilder().setName('ticket')
         .setDescription('Manage your tickets!')
         .addSubcommand(subcommand =>
             subcommand
             .setName('open')
-            .setDescription('Opens a ticket')) //TODO: add so a tutor or tutors can be specified
+            .setDescription('Opens a ticket.'))
+            /*.addUserOption(option => 
+                option.setName('tutor')
+                .setDescription('Specify which tutor you would like to recieve help from; leave blank if any tutor can help!'))) //TODO: add so a tutor or tutors can be specified*/
         .addSubcommand(subcommand =>
             subcommand
             .setName('take')
-            .setDescription('Marks an open ticket as ongoing and announces who came to assist'))
+            .setDescription('Marks an open ticket as ongoing and announces who came to assist.'))
         .addSubcommand(subcommand =>
             subcommand
             .setName('close')
-            .setDescription('Closes an ongoing ticket'))
+            .setDescription('Closes an ongoing ticket.'))
 ]
 	.map(command => command.toJSON());
 

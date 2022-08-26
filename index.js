@@ -47,14 +47,17 @@ client.on('interactionCreate', async interaction => {
 				],
 			});
 
-			await interaction.reply({ content: "Your ticket has been created under the " + openTicketCategory.name + " category, with the name " + ticketChannelName + "!", ephemeral: true });
-
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
-			await ticketChannel.send({ content: "Please elaborate on your question while we find a tutor to assist you!", ephemeral: true });
+
+			await interaction.reply({ content: "Your ticket has been created in: <#" + ticketChannel.id + ">.", ephemeral: true });
+
+			//change message if tutor or tutors are picked
+			await ticketChannel.send({ content: "Hey, <@" + interaction.user.id + ">! Please elaborate on your question while we find a tutor to assist you!", ephemeral: true });
 
 			const tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
 			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
-			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! " + interaction.user.tag + " needs assistance in " + ticketChannelName + "!");
+
+			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!");
 		}
 
 		if (interaction.options.getSubcommand() === 'take') {
@@ -73,7 +76,7 @@ client.on('interactionCreate', async interaction => {
 			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "Ongoing Tickets")
 			interaction.channel.setParent(ongoingTicketsCategory)
 			//announce who came to help
-			await interaction.reply(interaction.user.tag + " is here to help!");
+			await interaction.reply("<@" + interaction.user.id + "> is here to help!");
 		}
 
 		if (interaction.options.getSubcommand() === 'close') {
@@ -87,6 +90,7 @@ client.on('interactionCreate', async interaction => {
 			interaction.channel.setParent(closedTicketsCategory)
 			//make it read only
 			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
+
 			//announce who came to help
 			await interaction.reply("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!");
 		}
