@@ -1,11 +1,11 @@
 /*
 IDEAS: 
-Specify 0...N tutors in the ticket open command
-Use embeds to send messages
+Specify 0...N tutors in the ticket open banner... dropdown?
 Use buttons to take and close tickets
 
 Channel names design
 Emojis to channels
+Channel icon: wombat with diploma cap, tutor bot icon: wombat
 
 REFACTORING!!!
 */
@@ -71,7 +71,7 @@ client.on('interactionCreate', async interaction => {
 	const { commandName} = interaction;
 
 	if (commandName === 'sendticketopenbanner') {
-		//TODO: check persmission
+		//TODO: check persmission (Only tutors should be able to do this)
 
 		let embed = new EmbedBuilder()
 		.setColor(0x00CED1)
