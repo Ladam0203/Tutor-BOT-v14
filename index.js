@@ -147,7 +147,8 @@ function findChannel(client, channelName, type) {
 function asEmbed(message, isEphemeral) {
 	let embed = new EmbedBuilder()
 	.setColor(0x00CED1)
-	.setDescription(message);
+	.setDescription(message)
+	.setTimestamp();
 
 	return {embeds: [embed], ephemeral: isEphemeral };
 }
