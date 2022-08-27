@@ -1,3 +1,16 @@
+/*
+IDEAS: 
+Specify 0...N tutors in the ticket open command
+Use embeds to send messages
+Use buttons to take and close tickets
+Handle auto deletion of channels if over limit
+
+Emojis to channels
+Tickets should not be moved from categories but change emojis
+
+REFACTORING!!!
+*/
+
 // Require the necessary discord.js classes
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector } = require('discord.js');
 const { token } = require('./config.json');
@@ -21,6 +34,8 @@ client.on('interactionCreate', async interaction => {
 
 	if (commandName === 'ticket') {
 		if (interaction.options.getSubcommand() === 'open') {
+			//add error message if there are too many open tickets
+
 			if (interaction.channel.name !== "open-a-ticket")
 			{
 				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
@@ -31,21 +46,21 @@ client.on('interactionCreate', async interaction => {
 
 			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
 
-			await interaction.guild.channels.create({
-				name: ticketChannelName,
-				type: 0,
-				parent: openTicketCategory.id,
-				permissionOverwrites : [
-					{
-						id: interaction.user.id,
-						allow: [PermissionsBitField.Flags.ViewChannel],
-					},
-					{
-						id: interaction.channel.guild.roles.everyone.id,
-						deny: [PermissionsBitField.Flags.ViewChannel],
-					}
-				],
-			});
+				await interaction.guild.channels.create({
+					name: ticketChannelName,
+					type: 0,
+					parent: openTicketCategory.id,
+					permissionOverwrites : [
+						{
+							id: interaction.user.id,
+							allow: [PermissionsBitField.Flags.ViewChannel],
+						},
+						{
+							id: interaction.channel.guild.roles.everyone.id,
+							deny: [PermissionsBitField.Flags.ViewChannel],
+						}
+					],
+				});
 
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
@@ -61,6 +76,8 @@ client.on('interactionCreate', async interaction => {
 		}
 
 		if (interaction.options.getSubcommand() === 'take') {
+			//add error message if there are too many ongoing tickets
+
 			//check permission (Tutor role)
 			if (!interaction.member.roles.cache.some(role => role.name === "Tutor"))
 			{
@@ -68,7 +85,7 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 			//check channel
-			if ((!interaction.channel.name.includes("ticket") || interaction.channel.name === "ticket-opened-ping") || interaction.channel.parent.name !== "Open Tickets") { //TODO: write a regex 
+			if (!interaction.channel.name.match("^ticket-[a-z0-9]{4}") || interaction.channel.parent.name !== "Open Tickets") { //TODO: write a regex 
 				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
 				return;
 			}
@@ -85,8 +102,13 @@ client.on('interactionCreate', async interaction => {
 				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
 				return;
 			}
+
+			let closedTicketsCategory = findChannel(client, "Closed Tickets", 4);
+			if (isCategoryFull(client, closedTicketsCategory)) {
+				deleteChannelsInCategory(client, closedTicketsCategory);
+			}
+
 			//move ticket to closed
-			let closedTicketsCategory = client.channels.cache.find(c => c.name === "Closed Tickets")
 			interaction.channel.setParent(closedTicketsCategory)
 			//make it read only
 			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
@@ -94,14 +116,6 @@ client.on('interactionCreate', async interaction => {
 			//announce who came to help
 			await interaction.reply("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!");
 		}
-	}
-
-	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
-	} else if (commandName === 'server') {
-		await interaction.reply('Server info.');
-	} else if (commandName === 'user') {
-		await interaction.reply('User info.');
 	}
 });
 
@@ -116,4 +130,17 @@ function makeTicketId() {
  charactersLength));
    }
    return result;
+}
+
+function isCategoryFull(client, category) {
+	return client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).size >= 50; //CHANGE 1 to 50 AFTER TEST
+}
+
+function deleteChannelsInCategory(client, category) {
+	client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).forEach(
+		channel => channel.delete());
+}
+
+function findChannel(client, channelName, type) {
+	return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
 }
