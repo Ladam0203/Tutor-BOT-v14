@@ -15,19 +15,14 @@ const commands = [
         .setDescription('Manage your tickets!')
         .addSubcommand(subcommand =>
             subcommand
-            .setName('open')
-            .setDescription('Opens a ticket.'))
-            /*.addUserOption(option => 
-                option.setName('tutor')
-                .setDescription('Specify which tutor you would like to recieve help from; leave blank if any tutor can help!'))) //TODO: add so a tutor or tutors can be specified*/
-        .addSubcommand(subcommand =>
-            subcommand
             .setName('claim')
             .setDescription('Marks an open ticket as ongoing and announces who came to assist.'))
         .addSubcommand(subcommand =>
             subcommand
             .setName('close')
-            .setDescription('Closes an ongoing ticket.'))
+            .setDescription('Closes an ongoing ticket.')),
+    new SlashCommandBuilder().setName('ticketopenbanner')
+            .setDescription('Send the "Open a Ticket banner into the channel!" ')
 ]
 	.map(command => command.toJSON());
 

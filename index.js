@@ -11,7 +11,7 @@ REFACTORING!!!
 */
 
 // Require the necessary discord.js classes
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
 const { token } = require('./config.json');
 
 // Create a new client instance
@@ -27,19 +27,12 @@ client.once('ready', () => {
 
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	if (!interaction.isChatInputCommand() && !interaction.isButton()) return;
 
-	const { commandName} = interaction;
-
-	if (commandName === 'ticket') {
-		if (interaction.options.getSubcommand() === 'open') {
+	if (interaction.isButton()) {
+		if (interaction.customId === "openTicketButton")
+		{
 			//add error message if there are too many open tickets
-
-			if (interaction.channel.name !== "open-a-ticket")
-			{
-				await interaction.reply(asEmbed("You cannot use this command here!", true));
-				return;
-			}
 
 			let ticketChannelName = "ticket-" + makeTicketId();
 
@@ -73,9 +66,34 @@ client.on('interactionCreate', async interaction => {
 
 			await ticketOpenedPingChannel.send(asEmbed("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
 		}
+	}
 
+	const { commandName} = interaction;
+
+	if (commandName === 'sendticketopenbanner') {
+		//TODO: check persmission
+
+		let embed = new EmbedBuilder()
+		.setColor(0x00CED1)
+		.setTitle("Need help?")
+		.setDescription("Press the button below to open a ticket!")
+		.setFooter({ text: "Don't worry, only you and the tutors can see your ticket!"})
+	
+		const button = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('openTicketButton')
+						.setLabel('Open a Ticket')
+						.setStyle(ButtonStyle.Primary),
+				)
+		interaction.channel.send({embeds: [embed], components: [button]})
+	}
+	
+	if (commandName === 'ticket') {
 		if (interaction.options.getSubcommand() === 'claim') {
 			//add error message if there are too many ongoing tickets
+
+			//send ping about claimed ticket?
 
 			//check permission (Tutor role)
 			if (!interaction.member.roles.cache.some(role => role.name === "Tutor"))
@@ -150,5 +168,32 @@ function asEmbed(message, isEphemeral) {
 	.setDescription(message)
 	.setTimestamp();
 
-	return {embeds: [embed], ephemeral: isEphemeral };
+	/* //A way to choose multiple tutors?
+	const row2 = new ActionRowBuilder()
+			.addComponents(
+				new SelectMenuBuilder()
+					.setCustomId('select')
+					.setPlaceholder('Nothing selected')
+					.setMinValues(2)
+					.setMaxValues(3)
+					.addOptions([
+						{
+							label: 'Select me',
+							description: 'This is a description',
+							value: 'first_option',
+						},
+						{
+							label: 'You can select me too',
+							description: 'This is also a description',
+							value: 'second_option',
+						},
+						{
+							label: 'I am also an option',
+							description: 'This is a description as well',
+							value: 'third_option',
+						},
+					]),
+			);*/
+
+	return {embeds: [embed], ephemeral: isEphemeral};
 }
