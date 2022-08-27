@@ -22,7 +22,7 @@ const commands = [
                 .setDescription('Specify which tutor you would like to recieve help from; leave blank if any tutor can help!'))) //TODO: add so a tutor or tutors can be specified*/
         .addSubcommand(subcommand =>
             subcommand
-            .setName('take')
+            .setName('claim')
             .setDescription('Marks an open ticket as ongoing and announces who came to assist.'))
         .addSubcommand(subcommand =>
             subcommand

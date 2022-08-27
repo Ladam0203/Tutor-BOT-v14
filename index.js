@@ -3,10 +3,9 @@ IDEAS:
 Specify 0...N tutors in the ticket open command
 Use embeds to send messages
 Use buttons to take and close tickets
-Handle auto deletion of channels if over limit
 
+Channel names design
 Emojis to channels
-Tickets should not be moved from categories but change emojis
 
 REFACTORING!!!
 */
@@ -75,7 +74,7 @@ client.on('interactionCreate', async interaction => {
 			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!");
 		}
 
-		if (interaction.options.getSubcommand() === 'take') {
+		if (interaction.options.getSubcommand() === 'claim') {
 			//add error message if there are too many ongoing tickets
 
 			//check permission (Tutor role)
