@@ -209,15 +209,15 @@ client.on('interactionCreate', async interaction => {
 				.addComponents(
 					new SelectMenuBuilder()
 						.setCustomId('selectTutors')
-						.setPlaceholder('All the tutors can your tickets.')
+						.setPlaceholder('All the tutors can see your tickets.')
 						.setMinValues(1)
-						.setMaxValues(5)
+						//.setMaxValues(5) //TODO: Uncomment this when other tutors added
 						.addOptions([ //TODO: Extend with the other tutors
 							{
 								label: 'L. Ádám',
 								description: 'Languages: English, Hungarian',
 								value: '270592043473043480',
-							},
+							}
 						]),
 				);
 		await interaction.channel.send({embeds: [embed], components: [select]})
