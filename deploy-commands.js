@@ -22,7 +22,7 @@ const commands = [
             .setName('close')
             .setDescription('Closes an ongoing ticket.')),
     new SlashCommandBuilder().setName('ticketopenbanner')
-            .setDescription('Send the "Open a Ticket banner into the channel!" ')
+            .setDescription('Sends the "Open a Ticket" banner into the channel! ')
 ]
 	.map(command => command.toJSON());
 

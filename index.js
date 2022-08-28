@@ -2,6 +2,7 @@
 IDEAS: 
 Specify 0...N tutors in the ticket open banner... dropdown?
 Use buttons to take and close tickets
+Ticket transcript in private message from bot
 
 Channel names design
 Emojis to channels
@@ -70,8 +71,11 @@ client.on('interactionCreate', async interaction => {
 
 	const { commandName} = interaction;
 
-	if (commandName === 'sendticketopenbanner') {
-		//TODO: check persmission (Only tutors should be able to do this)
+	if (commandName === 'ticketopenbanner') {
+		if (!isTutor(interaction)) {
+			await interaction.reply(asEmbed("Insufficient permissions!", true));
+			return;
+		}
 
 		let embed = new EmbedBuilder()
 		.setColor(0x00CED1)
@@ -86,7 +90,8 @@ client.on('interactionCreate', async interaction => {
 						.setLabel('Open a Ticket')
 						.setStyle(ButtonStyle.Primary),
 				)
-		interaction.channel.send({embeds: [embed], components: [button]})
+		await interaction.channel.send({embeds: [embed], components: [button]})
+		interaction.reply(asEmbed('"Open a Ticekt" banner has been succesfully sent to the channel!', true))
 	}
 	
 	if (commandName === 'ticket') {
@@ -96,7 +101,7 @@ client.on('interactionCreate', async interaction => {
 			//send ping about claimed ticket?
 
 			//check permission (Tutor role)
-			if (!interaction.member.roles.cache.some(role => role.name === "Tutor"))
+			if (!isTutor(interaction))
 			{
 				await interaction.reply(asEmbed("Insufficient permissions!", true));
 				return;
@@ -147,6 +152,10 @@ function makeTicketId() {
  charactersLength));
    }
    return result;
+}
+
+function isTutor(interaction) {
+	return interaction.member.roles.cache.some(role => role.name === "Tutor");
 }
 
 function isCategoryFull(client, category) {
