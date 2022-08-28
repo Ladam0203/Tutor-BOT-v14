@@ -11,8 +11,10 @@ rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
 
 //Recreating new commands
 const commands = [
-    new SlashCommandBuilder().setName('ticketopenbanner')
-            .setDescription('Sends the "Open a Ticket" banner into the channel! ')
+    new SlashCommandBuilder().setName('openticketbanner') //TODO: group these banner commands into subcommands
+            .setDescription('Sends the "Open a Ticket" banner into the channel!'),
+    new SlashCommandBuilder().setName('selecttutorsbanner')
+            .setDescription('Sends the "Select Tutors" banner into the channel!')
 ]
 	.map(command => command.toJSON());
 
