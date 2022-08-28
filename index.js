@@ -5,6 +5,7 @@ Ticket transcript in private message from bot
 Claim/close buttons should be disabled after they were clicked
 Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
+Add tutor to ticket
 
 Channel names design
 Emojis to channels
@@ -65,15 +66,19 @@ client.on('interactionCreate', async interaction => {
 
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
-			//Set up permissions
-			if (!userPreferences[interaction.user.id] || userPreferences[interaction.user.id].tutors.split(', ').length === 1) { //TODO: Rewrite 1 to 5 if other tutors added
-				ticketChannel.permissionOverwrites.create(interaction.guild.roles.cache.find(r => r.name === 'Tutor').id, { ViewChannel: true })
-			} else {
-				userPreferences[interaction.user.id].tutors.split(", ").forEach(tutorId =>
+			//Set up permissions and send pings accordingly
+			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 2; //TODO: Rewrite 1 to 5 if other tutors added
+			let preferredTutorIds;
+			if (hasPreferences) { 
+				preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
+				preferredTutorIds.forEach(tutorId =>
 					ticketChannel.permissionOverwrites.create(tutorId, { ViewChannel: true }));
+				
+			} else {
+				ticketChannel.permissionOverwrites.create(interaction.guild.roles.cache.find(r => r.name === 'Tutor').id, { ViewChannel: true })
 			}
-
-			await interaction.reply(asEmbed("Your ticket has been created in: <#" + ticketChannel.id + ">.", true));
+			
+			await interaction.reply(asEmbed("Your ticket has been created in <#" + ticketChannel.id + ">!", true));
 
 			//change message if tutor or tutors are picked
 			let embed = new EmbedBuilder()
@@ -97,12 +102,15 @@ client.on('interactionCreate', async interaction => {
 			let msg = await ticketChannel.send({embeds: [embed], components: [row]});
 			msg.pin();
 
-			//await ticketChannel.send(asEmbed("Hey, <@" + interaction.user.id + ">! Please elaborate on your question while we find a tutor to assist you!", false));
-
 			const tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
 			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
 
-			await ticketOpenedPingChannel.send(asEmbed("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
+			if (hasPreferences) {
+				await ticketOpenedPingChannel.send(
+					asEmbed(preferredTutorIds.map(id => "<@" + id + ">").join(', ') + "! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
+			} else {
+				await ticketOpenedPingChannel.send(asEmbed("<@&" + tutorRole.id+ ">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
+			}
 		}
 		if (interaction.customId === "claimTicket")
 		{
@@ -202,7 +210,7 @@ client.on('interactionCreate', async interaction => {
 		.setColor(0x00CED1)
 		.setTitle("Who do you prefer?")
 		.setDescription("By default, all tutors can you your tickets. Below, you can change this!")
-		.setFooter({ text: "NOTE: This only applies to your future tickets: it won't change the visibility of your already created ones."})
+		.setFooter({ text: "NOTE: This only applies to your future tickets: it won't change the visibility of your already created ones.\nNOTE: If you have chosen tutors before, but cannot see them below: don't worry, they are saved."})
 	
 		//TODO: fill these out with valid values
 		const select = new ActionRowBuilder()
@@ -217,6 +225,11 @@ client.on('interactionCreate', async interaction => {
 								label: 'L. Ádám',
 								description: 'Languages: English, Hungarian',
 								value: '270592043473043480',
+							},
+							{
+								label: 'Tutor 2',
+								description: 'Languages: English, Hungarian',
+								value: 'tutor2',
 							}
 						]),
 				);
@@ -244,7 +257,7 @@ function isTutor(interaction) {
 }
 
 function isCategoryFull(client, category) {
-	return client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).size >= 50; //CHANGE 1 to 50 AFTER TEST
+	return client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).size >= 50;
 }
 
 function deleteChannelsInCategory(client, category) {
