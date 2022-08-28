@@ -11,16 +11,6 @@ rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
 
 //Recreating new commands
 const commands = [
-    new SlashCommandBuilder().setName('ticket')
-        .setDescription('Manage your tickets!')
-        .addSubcommand(subcommand =>
-            subcommand
-            .setName('claim')
-            .setDescription('Marks an open ticket as ongoing and announces who came to assist.'))
-        .addSubcommand(subcommand =>
-            subcommand
-            .setName('close')
-            .setDescription('Closes an ongoing ticket.')),
     new SlashCommandBuilder().setName('ticketopenbanner')
             .setDescription('Sends the "Open a Ticket" banner into the channel! ')
 ]

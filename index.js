@@ -8,6 +8,9 @@ Channel names design
 Emojis to channels
 Channel icon: wombat with diploma cap, tutor bot icon: wombat
 
+Claim/close buttons should be disabled after they were clicked
+Claim should change to a Release button if a tutor cannot help
+
 REFACTORING!!!
 */
 
@@ -30,14 +33,15 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton()) return;
 
+	//BUTTONS
 	if (interaction.isButton()) {
-		if (interaction.customId === "openTicketButton")
+		if (interaction.customId === "openTicket")
 		{
 			//add error message if there are too many open tickets
 
 			let ticketChannelName = "ticket-" + makeTicketId();
 
-			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
+			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "📫 Open Tickets");
 
 				await interaction.guild.channels.create({
 					name: ticketChannelName,
@@ -60,14 +64,77 @@ client.on('interactionCreate', async interaction => {
 			await interaction.reply(asEmbed("Your ticket has been created in: <#" + ticketChannel.id + ">.", true));
 
 			//change message if tutor or tutors are picked
-			await ticketChannel.send(asEmbed("Hey, <@" + interaction.user.id + ">! Please elaborate on your question while we find a tutor to assist you!", false));
+			let embed = new EmbedBuilder()
+			.setColor(0x00CED1)
+			.setTitle("Your ticket has been opened!")
+			.setDescription("Here you should elaborate on your question until a tutor arrives to help you!")
+			.setFooter({ text: "Don't worry about the buttons below, they are for our tutors to manage your ticket."});
+		
+			const row = new ActionRowBuilder()
+					.addComponents(
+						new ButtonBuilder()
+							.setCustomId('claimTicket')
+							.setLabel('Claim')
+							.setStyle(ButtonStyle.Secondary),
+					).addComponents(
+						new ButtonBuilder()
+							.setCustomId('closeTicket')
+							.setLabel('Close')
+							.setStyle(ButtonStyle.Danger),
+					);
+			let msg = await ticketChannel.send({embeds: [embed], components: [row]});
+			msg.pin();
+
+			//await ticketChannel.send(asEmbed("Hey, <@" + interaction.user.id + ">! Please elaborate on your question while we find a tutor to assist you!", false));
 
 			const tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
 			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
 
 			await ticketOpenedPingChannel.send(asEmbed("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
 		}
+		if (interaction.customId === "claimTicket")
+		{
+			//add error message if there are too many ongoing tickets
+
+			//send ping about claimed ticket?
+
+			//check permission (Tutor role)
+			if (!isTutor(interaction))
+			{
+				await interaction.reply(asEmbed("Insufficient permissions!", true));
+				return;
+			}
+
+			//move ticket to ongoing
+			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "📬 Ongoing Tickets")
+			interaction.channel.setParent(ongoingTicketsCategory)
+			//announce who came to help
+			await interaction.reply(asEmbed("<@" + interaction.user.id + "> is here to help!", false));
+		}
+		if (interaction.customId === "closeTicket")
+		{
+			if (!isTutor(interaction))
+			{
+				await interaction.reply(asEmbed("Insufficient permissions!", true));
+				return;
+			}
+
+			let closedTicketsCategory = findChannel(client, "📭 Closed Tickets", 4);
+			if (isCategoryFull(client, closedTicketsCategory)) {
+				deleteChannelsInCategory(client, closedTicketsCategory);
+			}
+
+			//move ticket to closed
+			interaction.channel.setParent(closedTicketsCategory)
+			//make it read only
+			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
+
+			//announce who came to help
+			await interaction.reply(asEmbed("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!", false));
+		}
 	}
+
+	//SLASH COMMANDS
 
 	const { commandName} = interaction;
 
@@ -83,61 +150,15 @@ client.on('interactionCreate', async interaction => {
 		.setDescription("Press the button below to open a ticket!")
 		.setFooter({ text: "Don't worry, only you and the tutors can see your ticket!"})
 	
-		const button = new ActionRowBuilder()
+		const open = new ActionRowBuilder()
 				.addComponents(
 					new ButtonBuilder()
-						.setCustomId('openTicketButton')
-						.setLabel('Open a Ticket')
+						.setCustomId('openTicket')
+						.setLabel('Open')
 						.setStyle(ButtonStyle.Primary),
 				)
-		await interaction.channel.send({embeds: [embed], components: [button]})
+		interaction.channel.send({embeds: [embed], components: [open]})
 		interaction.reply(asEmbed('"Open a Ticekt" banner has been succesfully sent to the channel!', true))
-	}
-	
-	if (commandName === 'ticket') {
-		if (interaction.options.getSubcommand() === 'claim') {
-			//add error message if there are too many ongoing tickets
-
-			//send ping about claimed ticket?
-
-			//check permission (Tutor role)
-			if (!isTutor(interaction))
-			{
-				await interaction.reply(asEmbed("Insufficient permissions!", true));
-				return;
-			}
-			//check channel
-			if (!interaction.channel.name.match("^ticket-[a-z0-9]{4}") || interaction.channel.parent.name !== "Open Tickets") { //TODO: write a regex 
-				await interaction.reply(asEmbed("You cannot use this command here!", true));
-				return;
-			}
-			//move ticket to ongoing
-			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "Ongoing Tickets")
-			interaction.channel.setParent(ongoingTicketsCategory)
-			//announce who came to help
-			await interaction.reply(asEmbed("<@" + interaction.user.id + "> is here to help!", false));
-		}
-
-		if (interaction.options.getSubcommand() === 'close') {
-			//check channel
-			if ((!interaction.channel.name.includes("ticket") || interaction.channel.name === "ticket-opened-ping") || interaction.channel.parent.name !== "Ongoing Tickets") { //TODO: write a regex 
-				await interaction.reply(asEmbed("You cannot use this command here!", true));
-				return;
-			}
-
-			let closedTicketsCategory = findChannel(client, "Closed Tickets", 4);
-			if (isCategoryFull(client, closedTicketsCategory)) {
-				deleteChannelsInCategory(client, closedTicketsCategory);
-			}
-
-			//move ticket to closed
-			interaction.channel.setParent(closedTicketsCategory)
-			//make it read only
-			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
-
-			//announce who came to help
-			await interaction.reply(asEmbed("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!", false));
-		}
 	}
 });
 
