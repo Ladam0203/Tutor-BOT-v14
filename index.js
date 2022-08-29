@@ -1,4 +1,7 @@
 /*
+BUGS:
+Claimed/closed tickets are not private, they sync with the category...
+
 IDEAS: 
 merge tickets to be under one channel
 Claim/close buttons should be disabled after they were clicked
@@ -139,7 +142,7 @@ client.on('interactionCreate', async interaction => {
 
 			//move ticket to ongoing
 			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)
-			interaction.channel.setParent(ongoingTicketsCategory)
+			interaction.channel.setParent(ongoingTicketsCategory, {lockPermissions: false})
 			//announce who came to help
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
@@ -171,7 +174,7 @@ client.on('interactionCreate', async interaction => {
 			}
 
 			//move ticket to closed
-			interaction.channel.setParent(closedTicketsCategory)
+			interaction.channel.setParent(closedTicketsCategory, {lockPermissions: false});
 			//make it read only
 			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
 
