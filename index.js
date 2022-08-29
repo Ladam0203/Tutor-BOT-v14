@@ -1,7 +1,6 @@
 /*
 IDEAS: 
-Specify 0...N tutors in the ticket open banner... dropdown?
-Ticket transcript in private message from bot
+Ticket transcript in private message from bot AFTER merge tickets to be under one channel
 Claim/close buttons should be disabled after they were clicked
 Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
@@ -46,7 +45,7 @@ client.on('interactionCreate', async interaction => {
 
 			let ticketChannelName = "ticket-" + makeTicketId();
 
-			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "📫 Open Tickets");
+			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "📫 • Open Tickets");
 
 				await interaction.guild.channels.create({
 					name: ticketChannelName,
@@ -126,7 +125,7 @@ client.on('interactionCreate', async interaction => {
 			}
 
 			//move ticket to ongoing
-			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "📬 Ongoing Tickets")
+			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "📬 • Ongoing Tickets")
 			interaction.channel.setParent(ongoingTicketsCategory)
 			//announce who came to help
 			let embed = new EmbedBuilder()
@@ -143,7 +142,7 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 
-			let closedTicketsCategory = findChannel(client, "📭 Closed Tickets", 4);
+			let closedTicketsCategory = findChannel(client, "📭 • Closed Tickets", 4);
 			if (isCategoryFull(client, closedTicketsCategory)) {
 				deleteChannelsInCategory(client, closedTicketsCategory);
 			}
