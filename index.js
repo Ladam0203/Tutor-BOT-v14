@@ -1,7 +1,4 @@
 /*
-BUGS:
-Claimed/closed tickets are not private, they sync with the category...
-
 IDEAS: 
 merge tickets to be under one channel
 Claim/close buttons should be disabled after they were clicked
@@ -9,6 +6,7 @@ Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
 Add tutor to ticket command
 See preferences command
+Preferences to recieve transcript
 
 Channel names design
 Emojis to channels
