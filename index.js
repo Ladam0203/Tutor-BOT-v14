@@ -190,8 +190,14 @@ client.on('interactionCreate', async interaction => {
 			const attachment = await discordTranscripts.createTranscript(interaction.channel, {fileName: interaction.channel.name + ".html"});
 
 			//TODO: Format private message
+			let transcriptEmbed = new EmbedBuilder()
+			.setColor(0x00CED1)
+			.setTitle("Transcript")
+			.setDescription("You can find the transcript of your ticket in HTML format above.")
+			.setTimestamp();
+
 			interaction.user.send({
-				files: [attachment]
+				embeds: [transcriptEmbed], files: [attachment]
 			});
 
 			setTimeout(function() { //Automatically delete closed ticket channel after 24hrs.
