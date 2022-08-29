@@ -15,7 +15,7 @@ REFACTORING!!!
 
 // Require the necessary discord.js classes
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
-const { token, openTicketsCategoryName, ongoingTicketsCategory, closedTicketsCategory } = require('./config.json');
+const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName } = require('./config.json');
 const fs = require('fs')
 
 const discordTranscripts = require('discord-html-transcripts');
@@ -129,7 +129,7 @@ client.on('interactionCreate', async interaction => {
 			}
 
 			//move ticket to ongoing
-			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === ongoingTicketsCategory)
+			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)
 			interaction.channel.setParent(ongoingTicketsCategory)
 			//announce who came to help
 			let embed = new EmbedBuilder()
