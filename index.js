@@ -117,14 +117,23 @@ client.on('interactionCreate', async interaction => {
 		{
 			//add error message if there are too many ongoing tickets
 
-			//TODO: A ticket should be only possibly claimed once, also it should restrict who can see it, also if its closed it should not be claimable
-
 			//send ping about claimed ticket?
 
 			//check permission (Tutor role)
 			if (!isTutor(interaction))
 			{
 				await interaction.reply(asEmbed("Insufficient permissions!", true));
+				return;
+			}
+
+			if (interaction.channel.parent === client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)) {
+				await interaction.reply(asEmbed("Someone had already claimed this ticket!", true));
+				return;
+			}
+
+			
+			if (interaction.channel.parent === client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
+				await interaction.reply(asEmbed("This ticket is already closed, thus cannot be claimed!", true));
 				return;
 			}
 
@@ -146,7 +155,15 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 
-			//TODO: A ticket should be only closed once, and it has to be claimed to be closed
+			if (interaction.channel.parent === client.channels.cache.find(c => c.name === openTicketsCategoryName)) {
+				await interaction.reply(asEmbed("The ticket has to be claimed first!", true));
+				return;
+			}
+
+			if (interaction.channel.parent === client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
+				await interaction.reply(asEmbed("This ticket is already closed!", true));
+				return;
+			}
 
 			let closedTicketsCategory = findChannel(client, closedTicketsCategoryName, 4);
 			if (isCategoryFull(client, closedTicketsCategory)) {
