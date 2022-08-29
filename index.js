@@ -1,10 +1,11 @@
 /*
 IDEAS: 
-Ticket transcript in private message from bot AFTER merge tickets to be under one channel
+merge tickets to be under one channel
 Claim/close buttons should be disabled after they were clicked
 Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
-Add tutor to ticket
+Add tutor to ticket command
+See preferences command
 
 Channel names design
 Emojis to channels
@@ -14,14 +15,17 @@ REFACTORING!!!
 
 // Require the necessary discord.js classes
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
-const { token } = require('./config.json');
+const { token, openTicketsCategoryName, ongoingTicketsCategory, closedTicketsCategory } = require('./config.json');
 const fs = require('fs')
+
+const discordTranscripts = require('discord-html-transcripts');
+const { config } = require('process');
 
 const userPreferencesPath = './user_preferences.json';
 const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent] });
 
 // Login to Discord with your client's token
 client.login(token);
@@ -39,13 +43,11 @@ client.on('interactionCreate', async interaction => {
 	if (interaction.isButton()) {
 		if (interaction.customId === "openTicket")
 		{
-			//add error message if there are too many open tickets
-
-			//TODO: take into account preferences
+			//TODO: add error message if there are too many open tickets
 
 			let ticketChannelName = "ticket-" + makeTicketId();
 
-			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "📫 • Open Tickets");
+			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === openTicketsCategoryName);
 
 				await interaction.guild.channels.create({
 					name: ticketChannelName,
@@ -65,7 +67,7 @@ client.on('interactionCreate', async interaction => {
 
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
-			//Set up permissions and send pings accordingly
+			//Set up permissions and send pings according to preferences
 			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 2; //TODO: Rewrite 1 to 5 if other tutors added
 			let preferredTutorIds;
 			if (hasPreferences) { 
@@ -115,6 +117,8 @@ client.on('interactionCreate', async interaction => {
 		{
 			//add error message if there are too many ongoing tickets
 
+			//TODO: A ticket should be only possibly claimed once, also it should restrict who can see it, also if its closed it should not be claimable
+
 			//send ping about claimed ticket?
 
 			//check permission (Tutor role)
@@ -125,7 +129,7 @@ client.on('interactionCreate', async interaction => {
 			}
 
 			//move ticket to ongoing
-			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "📬 • Ongoing Tickets")
+			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === ongoingTicketsCategory)
 			interaction.channel.setParent(ongoingTicketsCategory)
 			//announce who came to help
 			let embed = new EmbedBuilder()
@@ -142,7 +146,9 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 
-			let closedTicketsCategory = findChannel(client, "📭 • Closed Tickets", 4);
+			//TODO: A ticket should be only closed once, and it has to be claimed to be closed
+
+			let closedTicketsCategory = findChannel(client, closedTicketsCategoryName, 4);
 			if (isCategoryFull(client, closedTicketsCategory)) {
 				deleteChannelsInCategory(client, closedTicketsCategory);
 			}
@@ -156,9 +162,21 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
-			.setDescription("Hope this helped!")
-			.setFooter({ text: "WARNING: Closed tickets will be deleted after a set amount of time!"})
+			.setDescription("Hope this helped! A transcript of your ticket will be sent to your DMs in html fromat! (Open in browser)")
+			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
 			await interaction.reply({embeds : [embed]});
+
+			//Send DM with transcript
+			const attachment = await discordTranscripts.createTranscript(interaction.channel, {fileName: interaction.channel.name + ".html"});
+
+			//TODO: Format private message
+			interaction.user.send({
+				files: [attachment]
+			});
+
+			setTimeout(function() { //Automatically delete closed ticket channel after 24hrs.
+                interaction.channel.delete();
+            }, 86400000);
 		}
 	}
 
@@ -234,7 +252,6 @@ client.on('interactionCreate', async interaction => {
 				);
 		await interaction.channel.send({embeds: [embed], components: [select]})
 		interaction.reply(asEmbed('"Choose Tutors" banner has been succesfully sent to the channel!', true))
-		//TODO
 	}
 });
 
