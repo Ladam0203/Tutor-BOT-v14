@@ -8,6 +8,7 @@ Add tutor to ticket command
 See preferences command
 Preferences to recieve transcript
 Closed tickets: all tutors should see
+Self-role in landing zone
 
 Channel names design
 Emojis to channels
