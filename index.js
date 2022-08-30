@@ -7,6 +7,7 @@ No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is
 Add tutor to ticket command
 See preferences command
 Preferences to recieve transcript
+Closed tickets: all tutors should see
 
 Channel names design
 Emojis to channels
@@ -174,7 +175,7 @@ client.on('interactionCreate', async interaction => {
 			//move ticket to closed
 			interaction.channel.setParent(closedTicketsCategory, {lockPermissions: false});
 			//make it read only
-			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
+			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false, ViewChannel: false });
 
 			//announce who came to help
 			let embed = new EmbedBuilder()
