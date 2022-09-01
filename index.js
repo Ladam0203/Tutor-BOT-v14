@@ -270,14 +270,14 @@ client.on('interactionCreate', async interaction => {
 						.setMaxValues(4) //TODO: Raise this to 5 when Rasmus joins
 						.addOptions([ //TODO: Extend with the other tutors
 							{
-								label: 'L. Ádám',
-								description: 'Languages: English, Hungarian',
-								value: '270592043473043480',
-							},
-							{
 								label: 'Victor',
 								description: 'Languages: Danish, English',
 								value: '188226637941309440', //TODO: Replace with actual Victors id
+							},
+							{
+								label: 'Rasmus',
+								description: 'Languages: Danish, English',
+								value: '270592043473043480',
 							},
 							{
 								label: 'Tawfik',
@@ -288,6 +288,11 @@ client.on('interactionCreate', async interaction => {
 								label: 'Christian',
 								description: 'Languages: English',
 								value: '557965521795022906',
+							},
+							{
+								label: 'L. Ádám',
+								description: 'Languages: English, Hungarian',
+								value: '270592043473043480',
 							}
 						]),
 				);
