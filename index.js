@@ -71,7 +71,7 @@ client.on('interactionCreate', async interaction => {
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
 			//Set up permissions and send pings according to preferences
-			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 2; //TODO: Rewrite 1 to 5 if other tutors added
+			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 4; //TODO: Rewrite 4 to 5 if Rasmus joins
 			let preferredTutorIds;
 			if (hasPreferences) { 
 				preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
@@ -184,6 +184,8 @@ client.on('interactionCreate', async interaction => {
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
 			.setDescription("Hope this helped! A transcript of your ticket will be sent to your DMs in html fromat! (Open in browser)")
+			.addFields(
+				{ name: 'Your opinion matters!', value: 'If you have any remarks about the server, do not hesitate to write to us in the appropriate channels!' })
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
 			await interaction.reply({embeds : [embed]});
 
@@ -264,7 +266,7 @@ client.on('interactionCreate', async interaction => {
 						.setCustomId('selectTutors')
 						.setPlaceholder('All the tutors can see your tickets.')
 						.setMinValues(1)
-						//.setMaxValues(5) //TODO: Uncomment this when other tutors added
+						.setMaxValues(4) //TODO: Raise this to 5 when Rasmus joins
 						.addOptions([ //TODO: Extend with the other tutors
 							{
 								label: 'L. Ádám',
@@ -272,9 +274,19 @@ client.on('interactionCreate', async interaction => {
 								value: '270592043473043480',
 							},
 							{
-								label: 'Tutor 2',
-								description: 'Languages: English, Hungarian',
-								value: 'tutor2',
+								label: 'Victor',
+								description: 'Languages: Danish, English',
+								value: '188226637941309440',
+							},
+							{
+								label: 'Tawfik',
+								description: 'Languages: English, French',
+								value: '885619143691370557',
+							},
+							{
+								label: 'Christian',
+								description: 'Languages: English',
+								value: '557965521795022906',
 							}
 						]),
 				);
