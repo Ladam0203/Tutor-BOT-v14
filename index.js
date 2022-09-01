@@ -84,7 +84,7 @@ client.on('interactionCreate', async interaction => {
 			
 			await interaction.reply(asEmbed("Your ticket has been created in <#" + ticketChannel.id + ">!", true));
 
-			//change message if tutor or tutors are picked
+			//TODO: change message if tutor or tutors are picked
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle("Ticket has been opened!")
@@ -168,6 +168,7 @@ client.on('interactionCreate', async interaction => {
 				return;
 			}
 
+			//If there are too many closed tickets, delete them all
 			let closedTicketsCategory = findChannel(client, closedTicketsCategoryName, 4);
 			if (isCategoryFull(client, closedTicketsCategory)) {
 				deleteChannelsInCategory(client, closedTicketsCategory);
@@ -175,7 +176,7 @@ client.on('interactionCreate', async interaction => {
 
 			//move ticket to closed
 			interaction.channel.setParent(closedTicketsCategory, {lockPermissions: false});
-			//make it read only
+			//make it read only (and also back to private bc lock permission is being mean with me)
 			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false, ViewChannel: false });
 
 			//announce who came to help
@@ -200,7 +201,8 @@ client.on('interactionCreate', async interaction => {
 				embeds: [transcriptEmbed], files: [attachment]
 			});
 
-			setTimeout(function() { //Automatically delete closed ticket channel after 24hrs.
+			//Automatically delete closed ticket channel after 24hrs.
+			setTimeout(function() { 
                 interaction.channel.delete();
             }, 86400000);
 		}
