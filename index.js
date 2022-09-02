@@ -71,7 +71,7 @@ client.on('interactionCreate', async interaction => {
 			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
 			//Set up permissions and send pings according to preferences
-			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 4; //TODO: Rewrite 4 to 5 if Rasmus joins
+			let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 5;
 			let preferredTutorIds;
 			if (hasPreferences) { 
 				preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
@@ -267,12 +267,12 @@ client.on('interactionCreate', async interaction => {
 						.setCustomId('selectTutors')
 						.setPlaceholder('All the tutors can see your tickets.')
 						.setMinValues(1)
-						.setMaxValues(4) //TODO: Raise this to 5 when Rasmus joins
-						.addOptions([ //TODO: Extend with the other tutors
+						.setMaxValues(5) 
+						.addOptions([ 
 							{
 								label: 'Victor',
 								description: 'Languages: Danish, English',
-								value: '188226637941309440', //TODO: Replace with actual Victors id
+								value: '188226637941309440', 
 							},
 							{
 								label: 'Rasmus',
