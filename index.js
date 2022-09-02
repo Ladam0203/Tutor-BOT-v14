@@ -223,6 +223,8 @@ client.on('interactionCreate', async interaction => {
 			.setDescription("You can find the transcript of your ticket in HTML format above.")
 			.setTimestamp();
 
+			interaction.reply("A transcript of this channel was sent to your DMs!");
+
 			interaction.user.send({
 				embeds: [transcriptEmbed], files: [attachment]
 			});
