@@ -1,4 +1,10 @@
 /*
+BUGS:
+Transcript is not sent to the opener, but the closer...
+
+Recommendations:
+Close button should be used by the Students as well
+
 IDEAS: 
 merge tickets to be under one channel
 Claim/close buttons should be disabled after they were clicked
@@ -186,12 +192,27 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
-			.setDescription("Hope this helped! A transcript of your ticket will be sent to your DMs in html fromat! (Open in browser)")
+			.setDescription('Hope this helped! If you would like to get a copy if this conversation, press the "Transcript" button below!')
 			.addFields(
 				{ name: 'Your opinion matters!', value: 'If you have any remarks about the server, do not hesitate to write to us in the appropriate channels!' })
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
-			await interaction.reply({embeds : [embed]});
 
+			let transcript = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('transcript')
+						.setLabel('Transcript')
+						.setStyle(ButtonStyle.Primary),
+				);
+
+			await interaction.reply({embeds : [embed], components :[transcript]});
+
+			//Automatically delete closed ticket channel after 24hrs.
+			setTimeout(function() { 
+                interaction.channel.delete();
+            }, 86400000);
+		}
+		if (interaction.customId === "transcript") {
 			//Send DM with transcript
 			const attachment = await discordTranscripts.createTranscript(interaction.channel, {fileName: interaction.channel.name + ".html"});
 
@@ -205,11 +226,6 @@ client.on('interactionCreate', async interaction => {
 			interaction.user.send({
 				embeds: [transcriptEmbed], files: [attachment]
 			});
-
-			//Automatically delete closed ticket channel after 24hrs.
-			setTimeout(function() { 
-                interaction.channel.delete();
-            }, 86400000);
 		}
 	}
 
