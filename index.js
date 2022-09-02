@@ -229,8 +229,8 @@ client.on('interactionCreate', async interaction => {
 			});
 		}
 		if (interaction.customId === "selfrolestudent") {
-			let role= interaction.guild.roles.cache.find(role => role.name === "Student");
-			interaction.user.roles.add(role);
+			let role= interaction.userguild.roles.cache.find(role => role.name === "Student");
+			interaction.member.roles.add(role);
 
 			interaction.reply(asEmbed('You have been given the "Student" role!'));
 		}
