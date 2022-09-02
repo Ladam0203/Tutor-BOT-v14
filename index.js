@@ -1,9 +1,8 @@
 /*
-BUGS:
-Transcript is not sent to the opener, but the closer...
-
 Recommendations:
-Close button should be used by the Students as well
+Close button should be used by the Students as well?
+Ticket claim/release
+Do you wanna set the closed ticket public for research purposes?
 
 IDEAS: 
 merge tickets to be under one channel
@@ -192,7 +191,7 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
-			.setDescription('Hope this helped! If you would like to get a copy if this conversation, press the "Transcript" button below!')
+			.setDescription('Hope this helped! If you would like to get a copy if this conversation, press the "Get transcript" button below!')
 			.addFields(
 				{ name: 'Your opinion matters!', value: 'If you have any remarks about the server, do not hesitate to write to us in the appropriate channels!' })
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
@@ -201,7 +200,7 @@ client.on('interactionCreate', async interaction => {
 				.addComponents(
 					new ButtonBuilder()
 						.setCustomId('transcript')
-						.setLabel('Transcript')
+						.setLabel('Get transcript')
 						.setStyle(ButtonStyle.Primary),
 				);
 
@@ -228,6 +227,12 @@ client.on('interactionCreate', async interaction => {
 			interaction.user.send({
 				embeds: [transcriptEmbed], files: [attachment]
 			});
+		}
+		if (interaction.customId === "selfrolestudent") {
+			let role= interaction.guild.roles.cache.find(role => role.name === "Student");
+			interaction.user.roles.add(role);
+
+			interaction.reply(asEmbed('You have been given the "Student" role!'));
 		}
 	}
 
@@ -260,7 +265,7 @@ client.on('interactionCreate', async interaction => {
 				.addComponents(
 					new ButtonBuilder()
 						.setCustomId('openTicket')
-						.setLabel('Open')
+						.setLabel('Open a ticket')
 						.setStyle(ButtonStyle.Primary),
 				);
 		await interaction.channel.send({embeds: [embed], components: [open]})
@@ -318,6 +323,28 @@ client.on('interactionCreate', async interaction => {
 				);
 		await interaction.channel.send({embeds: [embed], components: [select]})
 		interaction.reply(asEmbed('"Choose Tutors" banner has been succesfully sent to the channel!', true))
+	}
+
+	if (commandName === "selfrolestudentbanner") {
+		if (!isTutor(interaction)) {
+			await interaction.reply(asEmbed("Insufficient permissions!", true));
+			return;
+		}
+
+		let embed = new EmbedBuilder()
+		.setColor(0x00CED1)
+		.setTitle("Welcome!")
+		.setDescription('Press the button below to grant yourself the "Student" role to access more channels!')
+	
+		let selfrolestudent = new ActionRowBuilder()
+				.addComponents(
+					new ButtonBuilder()
+						.setCustomId('selfrolestudent')
+						.setLabel("Let's go!")
+						.setStyle(ButtonStyle.Success),
+				);
+		await interaction.channel.send({embeds: [embed], components: [selfrolestudent]})
+		interaction.reply(asEmbed('"Self role Student" banner has been succesfully sent to the channel!', true))
 	}
 });
 

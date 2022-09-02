@@ -14,7 +14,9 @@ const commands = [
     new SlashCommandBuilder().setName('openticketbanner') //TODO: group these banner commands into subcommands
             .setDescription('Sends the "Open a Ticket" banner into the channel!'),
     new SlashCommandBuilder().setName('selecttutorsbanner')
-            .setDescription('Sends the "Select Tutors" banner into the channel!')
+            .setDescription('Sends the "Select Tutors" banner into the channel!'),
+	new SlashCommandBuilder().setName('selfrolestudentbanner')
+            .setDescription('Sends the "Self role Student" banner into the channel!')
 ]
 	.map(command => command.toJSON());
 
