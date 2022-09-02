@@ -1,8 +1,11 @@
 /*
-Recommendations:
+BUGS:
+Closed channels can still recieve messages... DAFUQ
+
+RECOMMENDATIONS:
 Close button should be used by the Students as well?
 Ticket claim/release
-Do you wanna set the closed ticket public for research purposes?
+Do you wanna set the closed ticket public for improving the tutoring service?
 
 IDEAS: 
 merge tickets to be under one channel
