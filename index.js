@@ -77,7 +77,9 @@ client.on('interactionCreate', async interaction => {
 				preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
 				for (let i = 0; i < preferredTutorIds.length; i++) {
 					let tutor = await client.users.fetch(preferredTutorIds[i])
-					ticketChannel.permissionOverwrites.create(tutor, { ViewChannel: true });
+					if (preferredTutorIds[i] !== interaction.user.id) { //this avoids the error that tutors include them in their prefs and open a ticket
+						ticketChannel.permissionOverwrites.create(tutor.id, { ViewChannel: true });
+					}
 				}
 			} else {
 				ticketChannel.permissionOverwrites.create(interaction.guild.roles.cache.find(r => r.name === 'Tutor').id, { ViewChannel: true })
