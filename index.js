@@ -191,7 +191,7 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
-			.setDescription('Hope this helped! If you would like to get a copy if this conversation, press the "Get transcript" button below!')
+			.setDescription('Hope this helped! If you would like to get a copy of this conversation, press the "Get transcript" button below!')
 			.addFields(
 				{ name: 'Your opinion matters!', value: 'If you have any remarks about the server, do not hesitate to write to us in the appropriate channels!' })
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
