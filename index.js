@@ -1,7 +1,9 @@
 /*
 BUGS:
-Ticket opener doesn't show up as member of the channel until they send a message
-Ticket closed says null on channel.delete
+
+ClOSED BUGS:
+Ticket opener doesn't show up as member of the channel until they send a message (MAYBE OKAY)
+Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
 
 RECOMMENDATIONS:
 Close button should be used by the Students as well?
@@ -208,9 +210,12 @@ client.on('interactionCreate', async interaction => {
 			await interaction.reply({embeds : [embed], components :[transcript]});
 
 			//Automatically delete closed ticket channel after 24hrs. Removed as it caused a bug...
+			
+			/*
 			setTimeout(function() { 
                 interaction.channel.delete();
             }, 86400000);
+			*/
 		}
 		if (interaction.customId === "transcript") {
 			//Send DM with transcript
