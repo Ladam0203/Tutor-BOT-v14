@@ -1,11 +1,12 @@
 /*
 BUGS:
-Closed channels can still recieve messages... DAFUQ
+Ticket opener doesn't show up as member of the channel until they send a message
+Ticket closed says null on channel.delete
 
 RECOMMENDATIONS:
 Close button should be used by the Students as well?
 Ticket claim/release
-Do you wanna set the closed ticket public for improving the tutoring service?
+Do you wanna set the closed ticket public for improving the tutoring service/Closed tickets: all tutors should see
 
 IDEAS: 
 merge tickets to be under one channel
@@ -14,9 +15,6 @@ Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
 Add tutor to ticket command
 See preferences command
-Preferences to recieve transcript
-Closed tickets: all tutors should see
-Self-role in landing zone
 
 Channel names design
 Emojis to channels
@@ -190,7 +188,7 @@ client.on('interactionCreate', async interaction => {
 			//make it read only (and also back to private bc lock permission is being mean with me)
 			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false, ViewChannel: false });
 
-			//announce who came to help
+			//Send ticket closed message and transcipt button
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed')
@@ -209,7 +207,7 @@ client.on('interactionCreate', async interaction => {
 
 			await interaction.reply({embeds : [embed], components :[transcript]});
 
-			//Automatically delete closed ticket channel after 24hrs.
+			//Automatically delete closed ticket channel after 24hrs. Removed as it caused a bug...
 			setTimeout(function() { 
                 interaction.channel.delete();
             }, 86400000);
@@ -232,6 +230,7 @@ client.on('interactionCreate', async interaction => {
 			});
 		}
 		if (interaction.customId === "selfrolestudent") {
+			//Landing zone's self role button 
 			let studentRole = interaction.guild.roles.cache.find(r => r.name === 'Student');
 			interaction.member.roles.add(studentRole);
 
@@ -248,8 +247,7 @@ client.on('interactionCreate', async interaction => {
 		}
 	}
 
-	//SLASH COMMANDS
-
+	//SLASH COMMANDS, mostly for tutors to resend banners
 	const { commandName} = interaction;
 
 	if (commandName === 'openticketbanner') {
