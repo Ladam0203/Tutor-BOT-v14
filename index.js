@@ -99,7 +99,7 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle("Ticket has been opened!")
-			.setDescription("Here you should elaborate on your question until a tutor arrives to help you!")
+			.setDescription("Hey <@" + interaction.user.id + ">! Here you should elaborate on your question until a tutor arrives to help you!")
 			.setFooter({ text: "Don't worry about the buttons below, they are for our tutors to manage your ticket."});
 		
 			const row = new ActionRowBuilder()
@@ -158,7 +158,7 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been marked as "ongoing"!')
-			.setDescription("<@" + interaction.user.id + "> is here to help!")
+			.setDescription("<@" + interaction.user.id + "> is here to assist you!")
 			await interaction.reply({embeds: [embed]});
 		}
 		if (interaction.customId === "closeTicket")
@@ -193,8 +193,8 @@ client.on('interactionCreate', async interaction => {
 			//Send ticket closed message and transcipt button
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
-			.setTitle('Ticket has been closed') //TODO: write who closed the ticket
-			.setDescription('Hope this helped! If you would like to get a copy of this conversation, press the "Get transcript" button below!')
+			.setTitle('Ticket has been closed!') //TODO: write who closed the ticket
+			.setDescription('<@' + interaction.user.id + '> closed your ticket. If you would like to get a copy of this conversation, press the "Get transcript" button below!')
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
 
 			let transcript = new ActionRowBuilder()
