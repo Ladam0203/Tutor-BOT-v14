@@ -7,7 +7,6 @@ Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPROD
 
 RECOMMENDATIONS:
 Close button should be used by the Students as well?
-Ticket claim/release
 Do you wanna set the closed ticket public for improving the tutoring service/Closed tickets: all tutors should see
 
 IDEAS: 
@@ -17,6 +16,7 @@ Claim should change to a Release button if a tutor cannot help
 No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
 Add tutor to ticket command
 See preferences command
+Suggestion vote incorporation based on BotHub
 
 Channel names design
 Emojis to channels
@@ -26,7 +26,7 @@ REFACTORING!!!
 
 // Require the necessary discord.js classes
 const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
-const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName } = require('./config.json');
+const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('./config.json');
 const fs = require('fs')
 
 const discordTranscripts = require('discord-html-transcripts');
@@ -193,10 +193,8 @@ client.on('interactionCreate', async interaction => {
 			//Send ticket closed message and transcipt button
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
-			.setTitle('Ticket has been closed')
+			.setTitle('Ticket has been closed') //TODO: write who closed the ticket
 			.setDescription('Hope this helped! If you would like to get a copy of this conversation, press the "Get transcript" button below!')
-			.addFields(
-				{ name: 'Your opinion matters!', value: 'If you have any remarks about the server, do not hesitate to write to us in the appropriate channels!' })
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
 
 			let transcript = new ActionRowBuilder()
@@ -209,13 +207,11 @@ client.on('interactionCreate', async interaction => {
 
 			await interaction.reply({embeds : [embed], components :[transcript]});
 
-			//Automatically delete closed ticket channel after 24hrs. Removed as it caused a bug...
-			
-			/*
-			setTimeout(function() { 
-                interaction.channel.delete();
-            }, 86400000);
-			*/
+			let followUpEmbed = new EmbedBuilder()
+			.setColor(0x00CED1)
+			.setTitle('Your opinion matters!')
+			.setDescription('If you have any remarks about the server, do not hesitate to write to us in the appropritae channels under the ' + serverBotCategoryName + ' category!')
+			await interaction.followUp({embeds: followUpEmbed})
 		}
 		if (interaction.customId === "transcript") {
 			//Send DM with transcript
