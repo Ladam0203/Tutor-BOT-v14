@@ -211,7 +211,7 @@ client.on('interactionCreate', async interaction => {
 			.setColor(0x00CED1)
 			.setTitle('Your opinion matters!')
 			.setDescription('If you have any remarks about the server, do not hesitate to write to us in the appropritae channels under the ' + serverBotCategoryName + ' category!')
-			await interaction.followUp({embeds: followUpEmbed})
+			await interaction.followUp({embeds: [followUpEmbed]})
 		}
 		if (interaction.customId === "transcript") {
 			//Send DM with transcript
