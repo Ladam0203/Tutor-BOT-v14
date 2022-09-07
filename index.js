@@ -2,11 +2,9 @@
 BUGS:
 
 ClOSED BUGS:
-Ticket opener doesn't show up as member of the channel until they send a message (MAYBE OKAY)
 Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
 
 RECOMMENDATIONS:
-Close button should be used by the Students as well?
 Do you wanna set the closed ticket public for improving the tutoring service/Closed tickets: all tutors should see
 
 IDEAS: 
