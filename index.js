@@ -17,6 +17,7 @@ No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is
 Add tutor to ticket command
 See preferences command
 Suggestion vote incorporation based on BotHub
+End of ticket: How we are doing?
 
 Channel names design
 Emojis to channels
@@ -163,13 +164,14 @@ client.on('interactionCreate', async interaction => {
 		}
 		if (interaction.customId === "closeTicket")
 		{
+			/* Removed, due to popular demand. Should be stil safe since the only students that should be able to see the ticket is themselves
 			if (!isTutor(interaction))
 			{
 				await interaction.reply(asEmbed("Insufficient permissions!", true));
 				return;
 			}
-
-			if (interaction.channel.parent === client.channels.cache.find(c => c.name === openTicketsCategoryName)) {
+			*/
+			if (interaction.channel.parent === client.channels.cache.find(c => c.name === openTicketsCategoryName) && isTutor(interaction)) {
 				await interaction.reply(asEmbed("The ticket has to be claimed first!", true));
 				return;
 			}
@@ -194,7 +196,7 @@ client.on('interactionCreate', async interaction => {
 			let embed = new EmbedBuilder()
 			.setColor(0x00CED1)
 			.setTitle('Ticket has been closed!') //TODO: write who closed the ticket
-			.setDescription('<@' + interaction.user.id + '> closed your ticket. If you would like to get a copy of this conversation, press the "Get transcript" button below!')
+			.setDescription('<@' + interaction.user.id + '> closed the ticket. If you would like to get a copy of this conversation, press the "Get transcript" button below!')
 			.setFooter({ text: "WARNING: Ticket channels will be deleted no later than 24hrs after closing !"})
 
 			let transcript = new ActionRowBuilder()
