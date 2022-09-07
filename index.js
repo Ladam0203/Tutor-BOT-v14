@@ -99,7 +99,6 @@ client.on('interactionCreate', async interaction => {
 			.setColor(0x00CED1)
 			.setTitle("Ticket has been opened!")
 			.setDescription("Hey <@" + interaction.user.id + ">! Here you should elaborate on your question until a tutor arrives to help you!")
-			.setFooter({ text: "Don't worry about the buttons below, they are for our tutors to manage your ticket."});
 		
 			const row = new ActionRowBuilder()
 					.addComponents(
