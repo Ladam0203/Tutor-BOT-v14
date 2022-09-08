@@ -24,18 +24,34 @@ REFACTORING!!!
 */
 
 // Require the necessary discord.js classes
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder, Collection } = require('discord.js');
 const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('./config.json');
-const fs = require('fs')
 
 const discordTranscripts = require('discord-html-transcripts');
 const { config } = require('process');
+
+const fs = require('node:fs')
+const path = require('node:path')
 
 const userPreferencesPath = './user_preferences.json';
 const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages] });
+
+client.commands = new Collection();
+
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.commands.set(command.data.name, command);
+}
 
 // Login to Discord with your client's token
 client.login(token);
@@ -247,105 +263,16 @@ client.on('interactionCreate', async interaction => {
 		}
 	}
 
-	//SLASH COMMANDS, mostly for tutors to resend banners
-	const { commandName} = interaction;
+	//SLASH COMMANDS
+	const command = interaction.client.commands.get(interaction.commandName);
 
-	if (commandName === 'openticketbanner') {
-		if (!isTutor(interaction)) {
-			await interaction.reply(asEmbed("Insufficient permissions!", true));
-			return;
-		}
+	if (!command) return;
 
-		let embed = new EmbedBuilder()
-		.setColor(0x00CED1)
-		.setTitle("Need help?")
-		.setDescription("Press the button below to open a ticket!")
-		.setFooter({ text: "Don't worry, only you and the chosen tutors can see your ticket!"})
-	
-		const open = new ActionRowBuilder()
-				.addComponents(
-					new ButtonBuilder()
-						.setCustomId('openTicket')
-						.setLabel('Open a ticket')
-						.setStyle(ButtonStyle.Primary),
-				);
-		await interaction.channel.send({embeds: [embed], components: [open]})
-		interaction.reply(asEmbed('"Open a Ticket" banner has been succesfully sent to the channel!', true))
-	}
-
-	if (commandName === "selecttutorsbanner")
-	{
-		if (!isTutor(interaction)) {
-			await interaction.reply(asEmbed("Insufficient permissions!", true));
-			return;
-		}
-
-		let embed = new EmbedBuilder()
-		.setColor(0x00CED1)
-		.setTitle("Who do you prefer?")
-		.setDescription("By default, all tutors can view your tickets. Below, you can change this!")
-		.setFooter({ text: "NOTE: This only applies to your future tickets: it won't change the visibility of your already created ones.\nNOTE: If you have chosen tutors before, but cannot see them below: they are saved."})
-	
-		//TODO: fill these out with valid values
-		const select = new ActionRowBuilder()
-				.addComponents(
-					new SelectMenuBuilder()
-						.setCustomId('selectTutors')
-						.setPlaceholder('All the tutors can see your tickets.')
-						.setMinValues(1)
-						.setMaxValues(5) 
-						.addOptions([ 
-							{
-								label: 'Victor',
-								description: 'Languages: Danish, English',
-								value: '188226637941309440', 
-							},
-							{
-								label: 'Rasmus',
-								description: 'Languages: Danish, English',
-								value: '176779465857302528',
-							},
-							{
-								label: 'Tawfik',
-								description: 'Languages: English, French',
-								value: '885619143691370557',
-							},
-							{
-								label: 'Christian',
-								description: 'Languages: English',
-								value: '557965521795022906',
-							},
-							{
-								label: 'L. Ádám',
-								description: 'Languages: English, Hungarian',
-								value: '270592043473043480',
-							}
-						]),
-				);
-		await interaction.channel.send({embeds: [embed], components: [select]})
-		interaction.reply(asEmbed('"Choose Tutors" banner has been succesfully sent to the channel!', true))
-	}
-
-	if (commandName === "selfrolestudentbanner") {
-		if (!isTutor(interaction)) {
-			await interaction.reply(asEmbed("Insufficient permissions!", true));
-			return;
-		}
-
-		let embed = new EmbedBuilder()
-		.setColor(0x00CED1)
-		.setTitle("Welcome!")
-		.setDescription('Press the button below to grant yourself the "Student" role to access more channels!')
-	
-		let selfrolestudent = new ActionRowBuilder()
-				.addComponents(
-					new ButtonBuilder()
-						.setCustomId('selfrolestudent')
-						.setLabel("Let's go!")
-						.setStyle(ButtonStyle.Success),
-				);
-		await interaction.channel.send({embeds: [embed], components: [selfrolestudent]})
-		interaction.reply(asEmbed('"Self role Student" banner has been succesfully sent to the channel!', true))
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
 	}
 });
 

@@ -1,4 +1,6 @@
-const { SlashCommandBuilder, Routes } = require('discord.js');
+const fs = require('node:fs');
+const path = require('node:path');
+const { Routes } = require('discord.js');
 const { REST } = require('@discordjs/rest');
 const { clientId, guildId, token } = require('./config.json');
 
@@ -10,15 +12,15 @@ rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: [] })
 	.catch(console.error);
 
 //Recreating new commands
-const commands = [
-    new SlashCommandBuilder().setName('openticketbanner') //TODO: group these banner commands into subcommands
-            .setDescription('Sends the "Open a Ticket" banner into the channel!'),
-    new SlashCommandBuilder().setName('selecttutorsbanner')
-            .setDescription('Sends the "Select Tutors" banner into the channel!'),
-	new SlashCommandBuilder().setName('selfrolestudentbanner')
-            .setDescription('Sends the "Self role Student" banner into the channel!')
-]
-	.map(command => command.toJSON());
+const commands = [];
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	commands.push(command.data.toJSON());
+}
 
 rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
 	.then(() => console.log('Successfully registered application commands.'))
