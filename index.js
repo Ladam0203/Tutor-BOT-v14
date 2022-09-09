@@ -1,6 +1,9 @@
 /*
 BUGS:
 
+TODO:
+Separate utils into a json so they can be imported
+
 ClOSED BUGS:
 Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
 
@@ -156,7 +159,7 @@ function deleteChannelsInCategory(client, category) {
 function findChannel(client, channelName, type) {
 	return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
 }
-*/
+
 
 function asEmbed(message, isEphemeral) {
 	let embed = new EmbedBuilder()
@@ -166,3 +169,5 @@ function asEmbed(message, isEphemeral) {
 
 	return {embeds: [embed], ephemeral: isEphemeral};
 }
+
+*/
