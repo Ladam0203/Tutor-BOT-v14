@@ -2,7 +2,6 @@
 BUGS:
 
 TODO:
-Separate utils into a json so they can be imported
 
 ClOSED BUGS:
 Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
