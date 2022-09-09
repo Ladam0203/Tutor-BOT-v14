@@ -1,5 +1,3 @@
-const { EmbedBuilder } = require('discord.js');
-
 const fs = require('node:fs')
 
 const userPreferencesPath = "./user_preferences.json";
