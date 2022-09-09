@@ -11,11 +11,46 @@ REFACTORING!!!
 */
 
 // Require the necessary discord.js classes
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector } = require('discord.js');
-const { token } = require('./config.json');
+const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder, Collection } = require('discord.js');
+const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('./config.json');
+
+const discordTranscripts = require('discord-html-transcripts');
+
+const fs = require('node:fs')
+const path = require('node:path')
+
+const userPreferencesPath = './user_preferences.json';
+const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
 // Create a new client instance
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages] });
+
+//READING
+//SLASH COMMANDS
+client.commands = new Collection();
+const commandsPath = path.join(__dirname, 'commands');
+const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+
+for (const file of commandFiles) {
+	const filePath = path.join(commandsPath, file);
+	const command = require(filePath);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.commands.set(command.data.name, command);
+}
+
+//BUTTONS
+client.buttons = new Collection();
+const buttonsPath = path.join(__dirname, 'buttons');
+const buttonFiles = fs.readdirSync(buttonsPath).filter(file => file.endsWith('.js'));
+
+for (const file of buttonFiles) {
+	const filePath = path.join(buttonsPath, file);
+	const button = require(filePath);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.buttons.set(button.customId, button);
+}
 
 // Login to Discord with your client's token
 client.login(token);
@@ -25,100 +60,48 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
+//So the client can be used from other command file
+module.exports = client
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand()) return;
 
-	const { commandName} = interaction;
+	//BUTTONS
+	const button = interaction.client.buttons.get(interaction.customId);
 
-	if (commandName === 'ticket') {
-		if (interaction.options.getSubcommand() === 'open') {
-			//add error message if there are too many open tickets
-
-			if (interaction.channel.name !== "open-a-ticket")
-			{
-				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
-				return;
-			}
-
-			let ticketChannelName = "ticket-" + makeTicketId();
-
-			const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === "Open Tickets");
-
-				await interaction.guild.channels.create({
-					name: ticketChannelName,
-					type: 0,
-					parent: openTicketCategory.id,
-					permissionOverwrites : [
-						{
-							id: interaction.user.id,
-							allow: [PermissionsBitField.Flags.ViewChannel],
-						},
-						{
-							id: interaction.channel.guild.roles.everyone.id,
-							deny: [PermissionsBitField.Flags.ViewChannel],
-						}
-					],
-				});
-
-			let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
-
-			await interaction.reply({ content: "Your ticket has been created in: <#" + ticketChannel.id + ">.", ephemeral: true });
-
-			//change message if tutor or tutors are picked
-			await ticketChannel.send({ content: "Hey, <@" + interaction.user.id + ">! Please elaborate on your question while we find a tutor to assist you!", ephemeral: true });
-
-			const tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
-			const ticketOpenedPingChannel = client.channels.cache.find(c => c.name === "ticket-opened-ping");
-
-			await ticketOpenedPingChannel.send("<@&" + tutorRole.id+">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!");
+	if (button)  {
+		try {
+			await button.handleButton(interaction);
+		} catch (error) {
+			console.error(error);
+			await interaction.reply({ content: 'There was an error while handling this button interaction!', ephemeral: true });
 		}
+	}
 
-		if (interaction.options.getSubcommand() === 'claim') {
-			//add error message if there are too many ongoing tickets
-
-			//check permission (Tutor role)
-			if (!interaction.member.roles.cache.some(role => role.name === "Tutor"))
-			{
-				await interaction.reply({ content: "Insufficient permissions!", ephemeral: true });
-				return;
-			}
-			//check channel
-			if (!interaction.channel.name.match("^ticket-[a-z0-9]{4}") || interaction.channel.parent.name !== "Open Tickets") { //TODO: write a regex 
-				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
-				return;
-			}
-			//move ticket to ongoing
-			let ongoingTicketsCategory = client.channels.cache.find(c => c.name === "Ongoing Tickets")
-			interaction.channel.setParent(ongoingTicketsCategory)
-			//announce who came to help
-			await interaction.reply("<@" + interaction.user.id + "> is here to help!");
+	//SELECT MENUS
+	if (interaction.isSelectMenu()) {
+		if (interaction.customId === "selectTutors") {
+			userPreferences[interaction.user.id] = {tutors: interaction.values.join(', ')}; //if not, create it
+			fs.writeFileSync(userPreferencesPath, JSON.stringify(userPreferences, null, 2));
+			await interaction.reply(asEmbed("Preferences saved!", true)); //TODO: actually list the tutors chosen
 		}
+	}
 
-		if (interaction.options.getSubcommand() === 'close') {
-			//check channel
-			if ((!interaction.channel.name.includes("ticket") || interaction.channel.name === "ticket-opened-ping") || interaction.channel.parent.name !== "Ongoing Tickets") { //TODO: write a regex 
-				await interaction.reply({ content: "This command cannot be used here!", ephemeral: true });
-				return;
-			}
+	//SLASH COMMANDS
+	const command = interaction.client.commands.get(interaction.commandName);
 
-			let closedTicketsCategory = findChannel(client, "Closed Tickets", 4);
-			if (isCategoryFull(client, closedTicketsCategory)) {
-				deleteChannelsInCategory(client, closedTicketsCategory);
-			}
-
-			//move ticket to closed
-			interaction.channel.setParent(closedTicketsCategory)
-			//make it read only
-			interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false });
-
-			//announce who came to help
-			await interaction.reply("Ticket has been closed and it can be found under closed tickets, WARNING: closed tickets will be deleted after a set amount of time!");
+	if (command) {
+		try {
+			await command.handleCommand(interaction);
+		} catch (error) {
+			console.error(error);
+			await interaction.reply({ content: 'There was an error while handling this slash command!', ephemeral: true });
 		}
 	}
 });
 
 //UTILITY
+/*
 function makeTicketId() {
     var length = 5;
     var result           = '';
@@ -142,4 +125,14 @@ function deleteChannelsInCategory(client, category) {
 
 function findChannel(client, channelName, type) {
 	return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
+}
+*/
+
+function asEmbed(message, isEphemeral) {
+	let embed = new EmbedBuilder()
+	.setColor(0x00CED1)
+	.setDescription(message)
+	.setTimestamp();
+
+	return {embeds: [embed], ephemeral: isEphemeral};
 }
