@@ -61,10 +61,10 @@ client.once('ready', () => {
 });
 
 //So the client can be used from other command file
-module.exports = client
+module.exports = client;
 
 client.on('interactionCreate', async interaction => {
-	if (!interaction.isChatInputCommand()) return;
+	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
 
 	//BUTTONS
 	const button = interaction.client.buttons.get(interaction.customId);
