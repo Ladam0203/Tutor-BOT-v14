@@ -26,16 +26,11 @@ REFACTORING!!!
 */
 
 // Require the necessary discord.js classes
-const { Client, GatewayIntentBits, ChannelType, PermissionsBitField, InteractionCollector, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder, Collection } = require('discord.js');
-const { token, openTicketsCategoryName, ongoingTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('./config.json');
-
-const discordTranscripts = require('discord-html-transcripts');
+const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { token } = require('./config.json');
 
 const fs = require('node:fs')
 const path = require('node:path')
-
-const userPreferencesPath = './user_preferences.json';
-const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
 // Create a new client instance
 const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.MessageContent, GatewayIntentBits.GuildMembers, GatewayIntentBits.GuildMessages] });
