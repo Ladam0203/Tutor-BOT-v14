@@ -11,7 +11,7 @@ const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 module.exports = {
     customId: "openTicket",
     async handleButton(interaction) {
-        //to avoid circular reference:
+        //to avoid circular reference, but I do not really like it
         const client = require("../index.js");
 
         //TODO: add error message if there are too many open tickets

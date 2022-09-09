@@ -78,6 +78,8 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
 
+	//Maybe it would be a good idea to join these all after all... because in separet folders, there could be files with the same name
+
 	//SLASH COMMANDS
 	const command = interaction.client.commands.get(interaction.commandName);
 
