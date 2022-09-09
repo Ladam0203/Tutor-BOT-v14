@@ -2,6 +2,7 @@
 BUGS:
 
 TODO:
+TEST THE REFACTORING!!!
 
 ClOSED BUGS:
 Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
