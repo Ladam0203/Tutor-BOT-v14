@@ -4,6 +4,8 @@ const { ongoingTicketsCategoryName, closedTicketsCategoryName } = require('../co
 module.exports = {
     customId: "claimTicket",
     async handleButton(interaction) {
+        //to avoid circular reference:
+        const client = require("../index.js");
         //add error message if there are too many ongoing tickets
 
 		//send ping about claimed ticket?

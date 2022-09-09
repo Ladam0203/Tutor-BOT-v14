@@ -55,13 +55,12 @@ for (const file of buttonFiles) {
 // Login to Discord with your client's token
 client.login(token);
 
+module.exports = client;
+
 // When the client is ready, run this code (only once)
 client.once('ready', () => {
 	console.log('Ready!');
 });
-
-//So the client can be used from other command file
-module.exports = client;
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;

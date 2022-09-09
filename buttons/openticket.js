@@ -3,14 +3,17 @@ const { openTicketsCategoryName } = require('../config.json');
 
 const fs = require('node:fs')
 
-const userPreferencesPath = './user_preferences.json';
+const userPreferencesPath = "./user_preferences.json";
 const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
-const client = require("../index.js")
+//const client = require("../index.js");
 
 module.exports = {
     customId: "openTicket",
     async handleButton(interaction) {
+        //to avoid circular reference:
+        const client = require("../index.js");
+
         //TODO: add error message if there are too many open tickets
 
         let ticketChannelName = "ticket-" + makeTicketId();
@@ -33,7 +36,7 @@ module.exports = {
                 ],
             });
 
-        let ticketChannel = interaction.guild.channels.cache.find(c => c.name === ticketChannelName)
+        let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
 
         //Set up permissions and send pings according to preferences
         let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 5;
