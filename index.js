@@ -1,8 +1,21 @@
 /*
+BUGS:
+
+ClOSED BUGS:
+Ticket closed says null on channel.delete (REMOVED UNTIL THERE IS TIME TO REPRODUCE)
+
+RECOMMENDATIONS:
+Do you wanna set the closed ticket public for improving the tutoring service/Closed tickets: all tutors should see
+
 IDEAS: 
-Specify 0...N tutors in the ticket open command
-Use embeds to send messages
-Use buttons to take and close tickets
+merge tickets to be under one channel
+Claim/close buttons should be disabled after they were clicked
+Claim should change to a Release button if a tutor cannot help
+No tutor appeared? change visibility for this ticket only FOLLOW UP, if there is no answer in 5 mins
+Add tutor to ticket command
+See preferences command
+Suggestion vote incorporation based on BotHub
+End of ticket: How we are doing?
 
 Channel names design
 Emojis to channels
