@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder} = require('discord.js');
+const {isTutor, asEmbed} = require("../util.js");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('banner') //TODO: group these banner commands into subcommands
@@ -116,18 +117,3 @@ module.exports = {
         }
     },
 };
-
-//TODO: Separate into util
-
-function isTutor(interaction) {
-	return interaction.member.roles.cache.some(role => role.name === "Tutor");
-}
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
-}

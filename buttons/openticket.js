@@ -6,7 +6,7 @@ const fs = require('node:fs')
 const userPreferencesPath = "./user_preferences.json";
 const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
-//const client = require("../index.js");
+const {makeTicketId, asEmbed} = require("../util.js")
 
 module.exports = {
     customId: "openTicket",
@@ -86,27 +86,4 @@ module.exports = {
             await ticketOpenedPingChannel.send(asEmbed("<@&" + tutorRole.id+ ">s! <@" + interaction.user.id + "> needs assistance in <#" + ticketChannel.id + ">!"), false);
         }
     },
-}
-
-//TODO: Separate to util
-
-function makeTicketId() {
-    var length = 5;
-    var result           = '';
-    var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
- charactersLength));
-   }
-   return result;
-}
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
 }

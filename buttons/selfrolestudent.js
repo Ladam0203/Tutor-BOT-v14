@@ -1,4 +1,4 @@
-const { EmbedBuilder} = require('discord.js');
+const {asEmbed} = require("../util.js")
 
 module.exports = {
     customId: "selfrolestudent",
@@ -9,14 +9,4 @@ module.exports = {
 
 		interaction.reply(asEmbed('You have been given the "Student" role!', true));
     }
-}
-
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
 }

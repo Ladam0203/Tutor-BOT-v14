@@ -1,6 +1,8 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const { token, openTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('../config.json');
 
+const {isTutor, isCategoryFull, deleteChannelsInCategory, findChannel, asEmbed} = require("../util.js")
+
 module.exports = {
     customId: "closeTicket",
     async handleButton(interaction) {
@@ -58,32 +60,4 @@ module.exports = {
 		.setDescription('If you have any remarks about the server, do not hesitate to write to us in the appropritae channels under the ' + serverBotCategoryName + ' category!')
 		await interaction.followUp({embeds: [followUpEmbed]})
     }
-}
-
-//TODO: Separate into util
-
-function isTutor(interaction) {
-	return interaction.member.roles.cache.some(role => role.name === "Tutor");
-}
-
-function isCategoryFull(client, category) {
-	return client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).size >= 50;
-}
-
-function deleteChannelsInCategory(client, category) {
-	client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).forEach(
-		channel => channel.delete());
-}
-
-function findChannel(client, channelName, type) {
-	return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
-}
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
 }

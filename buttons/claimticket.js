@@ -1,6 +1,8 @@
 const { EmbedBuilder } = require('discord.js');
 const { ongoingTicketsCategoryName, closedTicketsCategoryName } = require('../config.json');
 
+const {isTutor, asEmbed} = require("../util.js")
+
 module.exports = {
     customId: "claimTicket",
     async handleButton(interaction) {
@@ -38,19 +40,4 @@ module.exports = {
 		.setDescription("<@" + interaction.user.id + "> is here to assist you!")
 		await interaction.reply({embeds: [embed]});
     },
-}
-
-//TODO: Separate into util
-
-function isTutor(interaction) {
-	return interaction.member.roles.cache.some(role => role.name === "Tutor");
-}
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
 }

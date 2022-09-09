@@ -94,8 +94,6 @@ client.once('ready', () => {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
 
-	//Maybe it would be a good idea to join these all after all... because in separet folders, there could be files with the same name
-
 	//SLASH COMMANDS
 	const command = interaction.client.commands.get(interaction.commandName);
 
@@ -132,42 +130,3 @@ client.on('interactionCreate', async interaction => {
 		}
 	}
 });
-
-//UTILITY
-/*
-function makeTicketId() {
-    var length = 5;
-    var result           = '';
-    var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result += characters.charAt(Math.floor(Math.random() * 
- charactersLength));
-   }
-   return result;
-}
-
-function isCategoryFull(client, category) {
-	return client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).size >= 50; //CHANGE 1 to 50 AFTER TEST
-}
-
-function deleteChannelsInCategory(client, category) {
-	client.channels.cache.filter(channel => channel.parent === category && channel.type === 0).forEach(
-		channel => channel.delete());
-}
-
-function findChannel(client, channelName, type) {
-	return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
-}
-
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
-}
-
-*/

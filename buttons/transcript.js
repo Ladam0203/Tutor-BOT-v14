@@ -2,6 +2,8 @@ const { EmbedBuilder} = require('discord.js');
 
 const discordTranscripts = require('discord-html-transcripts');
 
+const {asEmbed} = require("../util.js")
+
 module.exports = {
     customId: "transcript",
     async handleButton(interaction) {
@@ -21,15 +23,4 @@ module.exports = {
 			embeds: [transcriptEmbed], files: [attachment]
 		});
     }
-}
-
-//TODO: Separate into util
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
 }
