@@ -52,6 +52,19 @@ for (const file of buttonFiles) {
 	client.buttons.set(button.customId, button);
 }
 
+//SELECT MENUS
+client.selectMenus = new Collection();
+const selectMenusPath = path.join(__dirname, 'selectmenus');
+const selectMenuFiles = fs.readdirSync(selectMenusPath).filter(file => file.endsWith('.js'));
+
+for (const file of selectMenuFiles) {
+	const filePath = path.join(selectMenusPath, file);
+	const selectMenu = require(filePath);
+	// Set a new item in the Collection
+	// With the key as the command name and the value as the exported module
+	client.selectMenus.set(selectMenu.customId, selectMenu);
+}
+
 // Login to Discord with your client's token
 client.login(token);
 
@@ -64,6 +77,18 @@ client.once('ready', () => {
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
+
+	//SLASH COMMANDS
+	const command = interaction.client.commands.get(interaction.commandName);
+
+	if (command) {
+		try {
+			await command.handleCommand(interaction);
+		} catch (error) {
+			console.error(error);
+			await interaction.reply({ content: 'There was an error while handling this slash command!', ephemeral: true });
+		}
+	}
 
 	//BUTTONS
 	const button = interaction.client.buttons.get(interaction.customId);
@@ -78,23 +103,14 @@ client.on('interactionCreate', async interaction => {
 	}
 
 	//SELECT MENUS
-	if (interaction.isSelectMenu()) {
-		if (interaction.customId === "selectTutors") {
-			userPreferences[interaction.user.id] = {tutors: interaction.values.join(', ')}; //if not, create it
-			fs.writeFileSync(userPreferencesPath, JSON.stringify(userPreferences, null, 2));
-			await interaction.reply(asEmbed("Preferences saved!", true)); //TODO: actually list the tutors chosen
-		}
-	}
+	const selectMenu = interaction.client.selectMenus.get(interaction.customId);
 
-	//SLASH COMMANDS
-	const command = interaction.client.commands.get(interaction.commandName);
-
-	if (command) {
+	if (selectMenu) {
 		try {
-			await command.handleCommand(interaction);
+			await selectMenu.handleSelectMenu(interaction)
 		} catch (error) {
 			console.error(error);
-			await interaction.reply({ content: 'There was an error while handling this slash command!', ephemeral: true });
+			await interaction.reply({ content: 'There was an error while handling this select menu interaction', ephemeral: true });
 		}
 	}
 });

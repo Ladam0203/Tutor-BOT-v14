@@ -6,6 +6,7 @@ module.exports = {
     async handleButton(interaction) {
         //to avoid circular reference:
         const client = require("../index.js");
+        
         /* Removed, due to popular demand. Should be stil safe since the only students that should be able to see the ticket is themselves
 		if (!isTutor(interaction))
 		{
