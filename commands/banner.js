@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder} = require('discord.js');
+const {isTutor, asEmbed} = require("../util.js");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('banner') //TODO: group these banner commands into subcommands
@@ -16,7 +17,7 @@ module.exports = {
         .setName('selfrolestudent')
         .setDescription('Sends the "Self role Student" banner into the channel!')),
         
-    async execute(interaction) {
+    async handleCommand(interaction) {
         if (interaction.options.getSubcommand() === 'openticket') {
             if (!isTutor(interaction)) {
                 await interaction.reply(asEmbed("Insufficient permissions!", true));
@@ -116,18 +117,3 @@ module.exports = {
         }
     },
 };
-
-//TODO: place them into a separate JSON file
-
-function isTutor(interaction) {
-	return interaction.member.roles.cache.some(role => role.name === "Tutor");
-}
-
-function asEmbed(message, isEphemeral) {
-	let embed = new EmbedBuilder()
-	.setColor(0x00CED1)
-	.setDescription(message)
-	.setTimestamp();
-
-	return {embeds: [embed], ephemeral: isEphemeral};
-}
