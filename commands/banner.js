@@ -54,7 +54,6 @@ module.exports = {
             .setDescription("By default, all tutors can view your tickets. Below, you can change this!")
             .setFooter({ text: "NOTE: This only applies to your future tickets: it won't change the visibility of your already created ones.\nNOTE: If you have chosen tutors before, but cannot see them below: they are saved."})
         
-            //TODO: fill these out with valid values
             const select = new ActionRowBuilder()
                     .addComponents(
                         new SelectMenuBuilder()
