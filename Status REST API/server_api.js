@@ -8,7 +8,7 @@ const status = {
 }
 
 app.post('/', function(request, response){
-  data = JSON.parse(request.body);      // your JSON
+  status = JSON.parse(request.body);      // your JSON
    //response.send(request.body);    // echo the result back
    console.log("Status object received.")
 });
