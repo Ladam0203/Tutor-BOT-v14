@@ -7,7 +7,7 @@ lcd.beginSync();
 
 clock = 0;
 
-const status = {
+var status = {
     running: true,
     clock: clock
 }
@@ -15,14 +15,19 @@ const status = {
 lcd.printLineSync(0, 'Uptime:');
 lcd.printLineSync(1, clock);
 
+
 setInterval(updateLCD, 1000);
 
-function updateLCD() {
-    postStatus(status);
-    status = getStatus();
+async function updateLCD() {
+    postStatus();
+    getStatus();
+    //TODO: increment clock, display on LCD
 }
 
-function postStatus(status) {
+
+function postStatus() {
+    const data = JSON.stringify(status);
+
     const options = {
       protocol: 'http:',
       hostname: 'localhost',
@@ -33,7 +38,7 @@ function postStatus(status) {
           'Content-Type': 'application/json',
           'Content-Length': data.length
       }
-  };
+    };
 
 
   const req = http.request(options, (res) => {
@@ -44,34 +49,34 @@ function postStatus(status) {
       });
 
       res.on('end', () => {
-          console.log("Status sent");
+          console.log("Status sent: " + data); //DOESNT DISPLAY???
       });
-
-  }).on("error", (err) => {
-      console.log("Error: ", err.message);
-  });
-
-  req.write(status);
-  req.end();
-}
-
-function getStatus(status) {
-  http.get(url, (res) => {
-    let data = '';
-
-    // called when a data chunk is received.
-    res.on('data', (chunk) => {
-        data += chunk;
-    });
-
-    // called when the complete response is received.
-    res.on('end', () => {
-        console.log("Status received");
-    });
 
     }).on("error", (err) => {
         console.log("Error: ", err.message);
     });
 
-    return data;
+    console.log("Status sent: " + data);
+    req.write(data);
+    req.end();
+}
+
+function getStatus() {
+    http.get(url, (res) => {
+        let data = '';
+
+        // called when a data chunk is received.
+        res.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // called when the complete response is received.
+        res.on('end', () => {
+            console.log("Status received: " + data);
+            status = JSON.parse(data);
+        });
+
+        }).on("error", (err) => {
+            console.log("Error: ", err.message);
+        });
 }
