@@ -2,8 +2,9 @@ const express = require('express')
 const app = express()
 const port = 80
 
-const data = {
-  status: "Offline"
+const status = {
+  running: false,
+  clock: -1
 }
 
 app.post('/', function(request, response){
@@ -14,7 +15,7 @@ app.post('/', function(request, response){
 
 app.get('/', (req, res) => {
   //res.header("Content-Type",'application/json');
-  res.send(data);
+  res.send(status);
   console.log("Status object sent.")
 })
 
