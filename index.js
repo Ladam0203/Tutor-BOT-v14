@@ -91,10 +91,8 @@ client.on('interactionCreate', async interaction => {
 	//SLASH COMMANDS
 	const command = interaction.client.commands.get(interaction.commandName);
 
-	if (!command) return;
-
 	try {
-		await command.execute(interaction);
+		await command.handleCommand(interaction);
 	} catch (error) {
 		console.error(error);
 		await interaction.reply({ content: 'There was an error while handling this command!', ephemeral: true });
