@@ -89,36 +89,47 @@ client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
 
 	//SLASH COMMANDS
-	const command = interaction.client.commands.get(interaction.commandName);
+	if (interaction.isChatInputCommand())
+	{
+		const command = interaction.client.commands.get(interaction.commandName);
 
-	try {
-		await command.handleCommand(interaction);
-	} catch (error) {
-		console.error(error);
-		await interaction.reply({ content: 'There was an error while handling this command!', ephemeral: true });
+		try {
+			await command.handleCommand(interaction);
+		} catch (error) {
+			console.error(error);
+			await interaction.reply({ content: 'There was an error while handling this command!', ephemeral: true });
+		}
+
+		return;
 	}
 
 	//BUTTONS
-	const button = interaction.client.buttons.get(interaction.customId);
+	if (interaction.isButton())
+	{
+		const button = interaction.client.buttons.get(interaction.customId);
 
-	if (button)  {
-		try {
-			await button.handleButton(interaction);
-		} catch (error) {
-			console.error(error);
-			await interaction.reply({ content: 'There was an error while handling this button interaction!', ephemeral: true });
+		if (button)  {
+			try {
+				await button.handleButton(interaction);
+			} catch (error) {
+				console.error(error);
+				await interaction.reply({ content: 'There was an error while handling this button interaction!', ephemeral: true });
+			}
 		}
 	}
 
 	//SELECT MENUS
-	const selectMenu = interaction.client.selectMenus.get(interaction.customId);
+	if(interaction.isSelectMenu())
+	{
+		const selectMenu = interaction.client.selectMenus.get(interaction.customId);
 
-	if (selectMenu) {
-		try {
-			await selectMenu.handleSelectMenu(interaction)
-		} catch (error) {
-			console.error(error);
-			await interaction.reply({ content: 'There was an error while handling this select menu interaction', ephemeral: true });
+		if (selectMenu) {
+			try {
+				await selectMenu.handleSelectMenu(interaction)
+			} catch (error) {
+				console.error(error);
+				await interaction.reply({ content: 'There was an error while handling this select menu interaction', ephemeral: true });
+			}
 		}
 	}
 });
