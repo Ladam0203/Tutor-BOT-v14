@@ -4,7 +4,6 @@ const { openTicketsCategoryName } = require('../config.json');
 const fs = require('node:fs')
 
 const userPreferencesPath = "./user_preferences.json";
-const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath));
 
 const {makeTicketId, asEmbed} = require("../util.js")
 
@@ -13,6 +12,8 @@ module.exports = {
     async handleButton(interaction) {
         //to avoid circular reference, but I do not really like it
         const client = require("../index.js");
+
+        const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath)); //has to be re-read each time the comment is executed
 
         //TODO: add error message if there are too many open tickets
 
