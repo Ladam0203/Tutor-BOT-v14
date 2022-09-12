@@ -133,3 +133,31 @@ client.on('interactionCreate', async interaction => {
 		}
 	}
 });
+
+//REST API
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const port = 80
+
+app.use(bodyParser.json())
+
+/*
+app.post('/', function(request, response){
+  status = request.body;
+  //response.send(status);    // echo the result back
+  console.log("Status object received:" + JSON.stringify(request.body))
+});
+*/
+
+app.get('/', (request, response) => {
+  let status = {
+    uptime: client.uptime
+  }
+  response.send(JSON.stringify(status));
+  //console.log("Status object sent:" + JSON.stringify(status))
+})
+
+app.listen(port, () => {
+  console.log(`WomBot Status API listening on port ${port}`)
+}) 
