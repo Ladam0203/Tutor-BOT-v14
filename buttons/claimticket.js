@@ -6,8 +6,6 @@ const {isTutor, asEmbed} = require("../util.js")
 module.exports = {
     customId: "claimTicket",
     async handleButton(interaction) {
-        //to avoid circular reference, but I do not really like it
-        const client = require("../index.js");
         //add error message if there are too many ongoing tickets
 
 		//send ping about claimed ticket?
@@ -19,19 +17,19 @@ module.exports = {
 			return;
 		}
 
-		if (interaction.channel.parent === client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)) {
+		if (interaction.channel.parent === interaction.client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)) {
 			await interaction.reply(asEmbed("Someone had already claimed this ticket!", true));
 			return;
 		}
 
 		
-		if (interaction.channel.parent === client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
+		if (interaction.channel.parent === interaction.client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
 			await interaction.reply(asEmbed("This ticket is already closed, thus cannot be claimed!", true));
 			return;
 		}
 
 		//move ticket to ongoing
-		let ongoingTicketsCategory = client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)
+		let ongoingTicketsCategory = interaction.client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)
 		interaction.channel.setParent(ongoingTicketsCategory, {lockPermissions: false})
 		//announce who came to help
 		let embed = new EmbedBuilder()

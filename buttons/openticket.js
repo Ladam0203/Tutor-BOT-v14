@@ -10,10 +10,8 @@ const {makeTicketId, asEmbed} = require("../util.js")
 module.exports = {
     customId: "openTicket",
     async handleButton(interaction) {
-        //to avoid circular reference, but I do not really like it
-        const client = require("../index.js");
-
-        const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath)); //has to be re-read each time the comment is executed
+        //has to be re-read each time the comment is executed
+        const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath)); 
 
         //TODO: add error message if there are too many open tickets
 
@@ -37,7 +35,7 @@ module.exports = {
                 ],
             });
 
-        let ticketChannel = client.channels.cache.find(c => c.name === ticketChannelName)
+        let ticketChannel = interaction.client.channels.cache.find(c => c.name === ticketChannelName)
 
         //Set up permissions and send pings according to preferences
         let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 5;
@@ -45,7 +43,7 @@ module.exports = {
         if (hasPreferences) { 
             preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
             for (let i = 0; i < preferredTutorIds.length; i++) {
-                let tutor = await client.users.fetch(preferredTutorIds[i])
+                let tutor = await interaction.client.users.fetch(preferredTutorIds[i])
                 if (preferredTutorIds[i] !== interaction.user.id) { //this avoids the error that tutors include them in their prefs and open a ticket
                     ticketChannel.permissionOverwrites.create(tutor.id, { ViewChannel: true });
                 }

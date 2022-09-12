@@ -6,9 +6,6 @@ const {isTutor, isCategoryFull, deleteChannelsInCategory, findChannel, asEmbed} 
 module.exports = {
     customId: "closeTicket",
     async handleButton(interaction) {
-        //to avoid circular reference, but I do not really like it
-        const client = require("../index.js");
-
         /* Removed, due to popular demand. Should be stil safe since the only students that should be able to see the ticket is themselves
 		if (!isTutor(interaction))
 		{
@@ -16,20 +13,20 @@ module.exports = {
 			return;
 		}
 		*/
-		if (interaction.channel.parent === client.channels.cache.find(c => c.name === openTicketsCategoryName) && isTutor(interaction)) {
+		if (interaction.channel.parent === interaction.client.channels.cache.find(c => c.name === openTicketsCategoryName) && isTutor(interaction)) {
 			await interaction.reply(asEmbed("The ticket has to be claimed first!", true));
 			return;
 		}
 
-		if (interaction.channel.parent === client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
+		if (interaction.channel.parent === interaction.client.channels.cache.find(c => c.name === closedTicketsCategoryName)) {
 			await interaction.reply(asEmbed("This ticket is already closed!", true));
 			return;
 		}
 
 		//If there are too many closed tickets, delete them all
-		let closedTicketsCategory = findChannel(client, closedTicketsCategoryName, 4);
-		if (isCategoryFull(client, closedTicketsCategory)) {
-			deleteChannelsInCategory(client, closedTicketsCategory);
+		let closedTicketsCategory = findChannel(interaction.client, closedTicketsCategoryName, 4);
+		if (isCategoryFull(interaction.client, closedTicketsCategory)) {
+			deleteChannelsInCategory(interaction.client, closedTicketsCategory);
 		}
 
 		//move ticket to closed
