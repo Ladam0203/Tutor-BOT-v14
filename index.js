@@ -85,6 +85,8 @@ client.once('ready', () => {
 	console.log('Ready!');
 });
 
+var exceptions = 0;
+
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isChatInputCommand() && !interaction.isButton() && !interaction.isSelectMenu()) return;
 
@@ -97,6 +99,7 @@ client.on('interactionCreate', async interaction => {
 			await command.handleCommand(interaction);
 		} catch (error) {
 			console.error(error);
+			exceptions++;
 			await interaction.reply({ content: 'There was an error while handling this command!', ephemeral: true });
 		}
 
@@ -113,6 +116,7 @@ client.on('interactionCreate', async interaction => {
 				await button.handleButton(interaction);
 			} catch (error) {
 				console.error(error);
+				exceptions++;
 				await interaction.reply({ content: 'There was an error while handling this button interaction!', ephemeral: true });
 			}
 		}
@@ -128,6 +132,7 @@ client.on('interactionCreate', async interaction => {
 				await selectMenu.handleSelectMenu(interaction)
 			} catch (error) {
 				console.error(error);
+				exceptions++;
 				await interaction.reply({ content: 'There was an error while handling this select menu interaction', ephemeral: true });
 			}
 		}
@@ -152,7 +157,8 @@ app.post('/', function(request, response){
 
 app.get('/', (request, response) => {
   let status = {
-    uptime: client.uptime
+    uptime: client.uptime,
+	exceptions: exceptions
   }
   response.send(JSON.stringify(status));
   //console.log("Status object sent:" + JSON.stringify(status))
