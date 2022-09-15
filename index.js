@@ -158,6 +158,7 @@ app.post('/', function(request, response){
 app.get('/', (request, response) => {
   let status = {
     uptime: client.uptime,
+	ping: client.ws.ping,
 	exceptions: exceptions
   }
   response.send(JSON.stringify(status));
