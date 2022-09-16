@@ -27,34 +27,29 @@ module.exports = {
 
         let embed = new EmbedBuilder()
             .setColor(0x00CED1)
-            .setTitle(`${interaction.user}'s suggestion:`)
-            .setDescription(interaction.options.getString("suggestion"))
+            .setTitle(`Suggestion:`)
+            .setDescription(`${interaction.user}: ` + interaction.options.getString("suggestion"))
+            //TODO: Include time until closing the vote
 
-        let msg = interaction.channel.send({embeds: [embed]})
-        msg.react('👍').then(() => msg.react('👎'));
-        msg.pin();
+        let msg = await interaction.channel.send({embeds: [embed]})
+        await msg.react('👍').then(() => msg.react('👎'));
+        await msg.pin();
 
         /*
-        //only allow the up and downvote emojis
-        //collector az emojikhoz???
-
+        //TODO Probs all the emojis should be listened for, so the wrong ones can be removed
         const filter = (reaction, user) => {
-            return ['👍', '👎'].includes(reaction.emoji.name) && user.id === interaction.user.id;
-        };
-        
-        message.awaitReactions({ filter, max: 1, time: 60000, errors: ['time'] })
-            .then(collected => {
-                const reaction = collected.first();
-        
-                if (reaction.emoji.name === '👍') {
-                    message.reply('You reacted with a thumbs up.');
-                } else {
-                    message.reply('You reacted with a thumbs down.');
-                }
-            })
-            .catch(collected => {
-                message.reply('You reacted with neither a thumbs up, nor a thumbs down.');
-            });
+            return ['👍', '👎'].includes(reaction.emoji.name);
+        };        
+        const collector = msg.createReactionCollector({ filter, time: 15000 });
+
+        collector.on('collect', m => {
+            //TODO: remove non 👍/👎 emois
+            console.log(`Collected ${m.content}`);
+        });
+
+        collector.on('end', collected => {
+            //Write vote finished, count the result and write foreseable action, tag me also! Introduce a command for announcing the action taken using the message's id! Also unpin the message
+        });
         */
 
         interaction.reply(asEmbed("Thank you for your suggestion!", true))
