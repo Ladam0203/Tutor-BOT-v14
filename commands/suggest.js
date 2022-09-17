@@ -32,7 +32,7 @@ module.exports = {
             //TODO: Include time until closing the vote
 
         let message = await interaction.channel.send({embeds: [embed]})
-        await message.react('👍').then(() => message.react('👎'));
+        await message.react('✅').then(() => message.react('❌'));
         await message.pin();
 
         /*
