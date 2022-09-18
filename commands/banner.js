@@ -1,5 +1,5 @@
 const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder} = require('discord.js');
-const {isTutor, asEmbed} = require("../util.js");
+const {isTutor, asEmbed, findRole} = require("../util.js");
 
 module.exports = {
     data: new SlashCommandBuilder().setName('banner') //TODO: group these banner commands into subcommands
@@ -102,7 +102,7 @@ module.exports = {
             let embed = new EmbedBuilder()
             .setColor(0x00CED1)
             .setTitle("Welcome!")
-            .setDescription('Press the button below to grant yourself the "Student" role to access more channels!')
+            .setDescription(`Press the button below to grant yourself the ${findRole(interaction, "Student")} role to access more channels!`)
         
             let selfrolestudent = new ActionRowBuilder()
                     .addComponents(

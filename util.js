@@ -25,7 +25,10 @@ module.exports = {
     findChannel(client, channelName, type) {
         return client.channels.cache.find(channel => channel.name === channelName && channel.type === type);
     },
-    
+
+    findRole(interaction, roleName) {
+        return interaction.guild.roles.cache.find(r => r.name === roleName);
+    },
     
     asEmbed(message, isEphemeral) {
         let embed = new EmbedBuilder()
