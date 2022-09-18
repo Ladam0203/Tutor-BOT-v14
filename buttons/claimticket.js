@@ -7,6 +7,7 @@ module.exports = {
     customId: "claimTicket",
     async handleButton(interaction) {
         //add error message if there are too many ongoing tickets
+		//TODO: turn off claim button/change to release (requires introducing the CRM system)
 
 		//send ping about claimed ticket?
 
