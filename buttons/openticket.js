@@ -1,5 +1,5 @@
 const { PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
-const { openTicketsCategoryName } = require('../config.json');
+const { openTicketsCategoryName, ticketPingsChannelName } = require('../config.json');
 
 const fs = require('node:fs')
 
@@ -76,7 +76,7 @@ module.exports = {
         msg.pin();
 
         const tutorRole = interaction.guild.roles.cache.find(r => r.name === 'Tutor');
-        const ticketOpenedPingChannel = interaction.guild.channels.cache.find(c => c.name === "ticket-opened-ping");
+        const ticketOpenedPingChannel = interaction.guild.channels.cache.find(c => c.name === ticketPingsChannelName);
 
         if (hasPreferences) {
             await ticketOpenedPingChannel.send(

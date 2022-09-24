@@ -13,6 +13,7 @@ Send message in ticket-ping (if all, then ping everyone, but the ones that had a
 
 const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const {asEmbed, isTutor, isFromTicketChannel} = require("../util.js");
+const {ticketPingsChannelName} = require("../config.json")
 
 module.exports = {
     data: new SlashCommandBuilder().setName('ticket')
@@ -43,21 +44,42 @@ module.exports = {
             return;
         }
         //Check if tutor or tutor(s) is already part of the ticket
+        //https://stackoverflow.com/questions/53249290/how-to-check-channel-permissions
         //ACTIONS
 
-        //Main thing: make the tutor(s) be able to see the ticket
         let id = interaction.options.getString("tutor");
+        let ticketPingsChannel = interaction.guild.channels.cache.find(c => c.name === ticketPingsChannelName);//add ticket pings channel to config, get the string from config in openticket
         
-        let tutorOrTutors;
-        if (id != 1011593669586976789) {
-            tutorOrTutors = await interaction.client.users.fetch(id);
+        if (id == 1011593669586976789) { //Tutor ROLE
+            let tutorRole = await interaction.guild.roles.fetch(id);
+            //Tutors added, only those should be mentioned, who cannot see the ticket. Would this include administrators?
+            let tutors = await interaction.guild.members.fetch()
+                .then(members=>
+                    members.filter(member=>member.roles.cache.some(role => role.id === id)));
+
+                    //TODO: This part does not seem to be executed, and gives an empty invite tag list
+            let newTutors = [];
+            for (let tutor in tutors) {
+                let ow = message.channel.permissionOverwrites.get(tutor.id);
+                console.log(ow);
+                if (ow && ow.SendMessages === false) {
+                    newTutors.push(tutor)
+                }
+            }
+
+            interaction.channel.permissionOverwrites.create(tutorRole, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
+
+            await ticketPingsChannel.send(
+                asEmbed(newTutors.map(tutor => tutor.toString()).join(', ') + "! " + interaction.user.toString() + " needs assistance in " + interaction.channel.toString() + "!")
+                );
         }
-        else {
-            tutorOrTutors = await interaction.guild.roles.cache.find(r => r.id === id);
+        else { //Tutor
+            let tutor = await interaction.client.users.fetch(id);
+            interaction.channel.permissionOverwrites.create(tutor, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
+            //1 tutor added, simple invite message
+            await ticketPingsChannel.send(asEmbed(tutor.toString() + "! " + interaction.user.toString() + " invited you to " + interaction.channel.toString() + "!"));
         }
-        
-        interaction.channel.permissionOverwrites.create(tutorOrTutors, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
-        
-        //Send invite message, in a way that the ones are not mentioned that can already see the ticket
+
+        interaction.reply(asEmbed("Succesfully invited to the ticket!", true));
     }
 }
