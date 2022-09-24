@@ -11,7 +11,7 @@ Rename ticket-opened-ping to ticket-ping, as it will accomodate the invite messa
 Send message in ticket-ping (if all, then ping everyone, but the ones that had access to the channel prior to that)
 */
 
-const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField} = require('discord.js');
 const {asEmbed, isTutor, isFromTicketChannel} = require("../util.js");
 const {ticketPingsChannelName} = require("../config.json")
 
@@ -57,13 +57,13 @@ module.exports = {
                 .then(members=>
                     members.filter(member=>member.roles.cache.some(role => role.id === id)));
 
-                    //TODO: This part does not seem to be executed, and gives an empty invite tag list
+            //TODO: Please include mods as well somehow pls :C
             let newTutors = [];
-            for (let tutor in tutors) {
-                let ow = message.channel.permissionOverwrites.get(tutor.id);
-                console.log(ow);
-                if (ow && ow.SendMessages === false) {
-                    newTutors.push(tutor)
+            for (let i = 0; i < tutors.size; i++) {
+                let permissions = interaction.channel.permissionsFor(tutors.at(i));
+                
+                if (!permissions.has([PermissionsBitField.Flags.ViewChannel])) {
+                    newTutors.push(tutors.at(i))
                 }
             }
 
