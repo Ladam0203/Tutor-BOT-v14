@@ -41,5 +41,9 @@ module.exports = {
 
     isTutor(interaction) {
         return interaction.member.roles.cache.some(role => role.name === "Tutor");
+    },
+
+    isFromTicketChannel(interaction) {
+        return interaction.channel.name.match("^ticket-[a-z0-9]{5}$")
     }
 }

@@ -5,7 +5,7 @@
 //add upvote and downvote by default
 //only allow the up and downvote emojis
 
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, SelectMenuBuilder} = require('discord.js');
+const { SlashCommandBuilder, EmbedBuilder} = require('discord.js');
 const { suggestionsChannelName } = require('../config.json');
 const {asEmbed, isTutor} = require("../util.js");
 
@@ -91,6 +91,7 @@ module.exports = {
 
             //TODO: Check if message is pinned: if it is not, that means that the vote is already closed
             //TODO: Check if message is actually a vote: maybe check embed?
+            //TODO: Check if message exists with the id
 
             let message = await interaction.channel.messages.fetch(interaction.options.getString("messageid"));
 
