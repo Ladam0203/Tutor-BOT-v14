@@ -70,7 +70,7 @@ module.exports = {
             interaction.channel.permissionOverwrites.create(tutorRole, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
 
             await ticketPingsChannel.send(
-                asEmbed(newTutors.map(tutor => tutor.toString()).join(', ') + "! " + interaction.user.toString() + " needs assistance in " + interaction.channel.toString() + "!")
+                asEmbed(newTutors.map(tutor => tutor.toString()).join(', ') + "! " + interaction.user.toString() + " invited you to " + interaction.channel.toString() + "!")
                 );
         }
         else { //Tutor
