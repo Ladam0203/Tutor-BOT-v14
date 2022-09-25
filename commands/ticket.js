@@ -61,6 +61,7 @@ module.exports = {
             let newTutors = [];
             for (let i = 0; i < tutors.size; i++) {
                 let permissions = interaction.channel.permissionsFor(tutors.at(i));
+                console.log(permissions);
                 
                 if (!permissions.has([PermissionsBitField.Flags.ViewChannel])) {
                     newTutors.push(tutors.at(i))

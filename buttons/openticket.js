@@ -1,5 +1,6 @@
 const { PermissionsBitField, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const { openTicketsCategoryName, ticketPingsChannelName } = require('../config.json');
+const ticketLogger = require("../ticket-logger.js")
 
 const fs = require('node:fs')
 
@@ -10,12 +11,13 @@ const {makeTicketId, asEmbed} = require("../util.js")
 module.exports = {
     customId: "openTicket",
     async handleButton(interaction) {
-        //has to be re-read each time the comment is executed
+        //has to be re-read each time the command is executed
         const userPreferences = JSON.parse(fs.readFileSync(userPreferencesPath)); 
 
         //TODO: add error message if there are too many open tickets
 
-        let ticketChannelName = "ticket-" + makeTicketId();
+        let ticketId = makeTicketId();
+        let ticketChannelName = "ticket-" + ticketId;
 
         const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === openTicketsCategoryName);
 
@@ -40,6 +42,7 @@ module.exports = {
         //Set up permissions and send pings according to preferences
         let hasPreferences = userPreferences[interaction.user.id] && userPreferences[interaction.user.id].tutors.split(', ').length !== 5;
         let preferredTutorIds;
+        let tutorRoleId = interaction.guild.roles.cache.find(r => r.name === 'Tutor').id;
         if (hasPreferences) { 
             preferredTutorIds = userPreferences[interaction.user.id].tutors.split(", ");
             for (let i = 0; i < preferredTutorIds.length; i++) {
@@ -49,8 +52,12 @@ module.exports = {
                 }
             }
         } else {
-            ticketChannel.permissionOverwrites.create(interaction.guild.roles.cache.find(r => r.name === 'Tutor').id, { ViewChannel: true })
+            ticketChannel.permissionOverwrites.create(tutorRoleId, { ViewChannel: true })
         }
+
+        //Create log:
+        ticketLogger.create(ticketId, hasPreferences ? preferredTutorIds : tutorRoleId, interaction.user.id);
+
         
         await interaction.reply(asEmbed("Your ticket has been created in <#" + ticketChannel.id + ">!", true));
 
