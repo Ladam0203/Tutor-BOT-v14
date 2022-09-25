@@ -14,6 +14,7 @@ Send message in ticket-ping (if all, then ping everyone, but the ones that had a
 const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField} = require('discord.js');
 const {asEmbed, isTutor, isFromTicketChannel} = require("../util.js");
 const {ticketPingsChannelName} = require("../config.json")
+const ticketLogger = require("../ticket-logger.js")
 
 module.exports = {
     data: new SlashCommandBuilder().setName('ticket')
@@ -50,15 +51,18 @@ module.exports = {
         let id = interaction.options.getString("tutor");
         let ticketPingsChannel = interaction.guild.channels.cache.find(c => c.name === ticketPingsChannelName);//add ticket pings channel to config, get the string from config in openticket
         
-        if (id == 1011593669586976789) { //Tutor ROLE
-            let tutorRole = await interaction.guild.roles.fetch(id);
+        let tutorRole = await interaction.guild.roles.cache.find(r => r.name === 'Tutor');
+
+        if (id === tutorRole.id) { //Tutor ROLE
             //Tutors added, only those should be mentioned, who cannot see the ticket. Would this include administrators?
             let tutors = await interaction.guild.members.fetch()
                 .then(members=>
-                    members.filter(member=>member.roles.cache.some(role => role.id === id)));
-
+                    members.filter(member=>member.roles.cache.some(role => role.id === tutorRole.id)));
             //TODO: Please include mods as well somehow pls :C
-            let newTutors = [];
+            let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name))
+            let newTutors = tutors.filter(tutor => !ticketLog.visibleTo.includes(tutor.id));
+            /*
+            //Old way
             for (let i = 0; i < tutors.size; i++) {
                 let permissions = interaction.channel.permissionsFor(tutors.at(i));
                 console.log(permissions);
@@ -67,8 +71,15 @@ module.exports = {
                     newTutors.push(tutors.at(i))
                 }
             }
+            */
 
+            //Update log with new visibleTo
+           ticketLog.visibleTo = tutorRole.id
+           ticketLogger.update(ticketLog);
+
+            //Set the new visibility
             interaction.channel.permissionOverwrites.create(tutorRole, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
+            //TODO: Update log
 
             await ticketPingsChannel.send(
                 asEmbed(newTutors.map(tutor => tutor.toString()).join(', ') + "! " + interaction.user.toString() + " invited you to " + interaction.channel.toString() + "!")
@@ -77,6 +88,10 @@ module.exports = {
         else { //Tutor
             let tutor = await interaction.client.users.fetch(id);
             interaction.channel.permissionOverwrites.create(tutor, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
+            //TODO: Update log
+            let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name))
+            ticketLog.visibleTo.push(id)
+            ticketLogger.update(ticketLog);
             //1 tutor added, simple invite message
             await ticketPingsChannel.send(asEmbed(tutor.toString() + "! " + interaction.user.toString() + " invited you to " + interaction.channel.toString() + "!"));
         }

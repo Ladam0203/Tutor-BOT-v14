@@ -34,6 +34,7 @@ module.exports = {
     update(ticketLog) {
         const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
         ticketLogs[ticketLog.id] = {
+            id: ticketLog.id,
             visibleTo: ticketLog.visibleTo,
             openedBy: ticketLog.openedBy,
             openedAt: ticketLog.openedAt,
