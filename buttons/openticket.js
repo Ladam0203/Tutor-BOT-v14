@@ -6,7 +6,7 @@ const fs = require('node:fs')
 
 const userPreferencesPath = "./user_preferences.json";
 
-const {makeTicketId, asEmbed} = require("../util.js")
+const {asEmbed} = require("../util.js")
 
 module.exports = {
     customId: "openTicket",
@@ -16,7 +16,7 @@ module.exports = {
 
         //TODO: add error message if there are too many open tickets
 
-        let ticketId = makeTicketId();
+        let ticketId = ticketLogger.makeTicketId();
         let ticketChannelName = "ticket-" + ticketId;
 
         const openTicketCategory = interaction.guild.channels.cache.find(c => c.name === openTicketsCategoryName);
@@ -55,9 +55,8 @@ module.exports = {
             ticketChannel.permissionOverwrites.create(tutorRoleId, { ViewChannel: true })
         }
 
-        //Create log:
+        //Create log
         ticketLogger.create(ticketId, hasPreferences ? preferredTutorIds : tutorRoleId, interaction.user.id);
-
         
         await interaction.reply(asEmbed("Your ticket has been created in <#" + ticketChannel.id + ">!", true));
 

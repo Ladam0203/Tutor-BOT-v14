@@ -1,5 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 const { ongoingTicketsCategoryName, closedTicketsCategoryName } = require('../config.json');
+const ticketLogger = require("../ticket-logger.js")
 
 const {isTutor, asEmbed} = require("../util.js")
 
@@ -32,6 +33,13 @@ module.exports = {
 		//move ticket to ongoing
 		let ongoingTicketsCategory = interaction.client.channels.cache.find(c => c.name === ongoingTicketsCategoryName)
 		interaction.channel.setParent(ongoingTicketsCategory, {lockPermissions: false})
+		
+		//Update log
+		let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name));
+		ticketLog.claimedBy = interaction.user.id;
+		ticketLog.claimedAt = new Date();
+		ticketLogger.update(ticketLog);
+
 		//announce who came to help
 		let embed = new EmbedBuilder()
 		.setColor(0x00CED1)

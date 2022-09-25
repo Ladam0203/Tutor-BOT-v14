@@ -1,5 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
 const { token, openTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('../config.json');
+const ticketLogger = require("../ticket-logger.js")
 
 const {isTutor, isCategoryFull, deleteChannelsInCategory, findChannel, asEmbed} = require("../util.js")
 
@@ -33,6 +34,12 @@ module.exports = {
 		interaction.channel.setParent(closedTicketsCategory, {lockPermissions: false});
 		//make it read only (and also back to private bc lock permission is being mean with me)
 		interaction.channel.permissionOverwrites.create(interaction.channel.guild.roles.everyone, { SendMessages: false, ViewChannel: false });
+
+		//Update log
+		let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name));
+		ticketLog.closedBy = interaction.user.id;
+		ticketLog.closedAt = new Date();
+		ticketLogger.update(ticketLog);
 
 		//Send ticket closed message and transcipt button
 		let embed = new EmbedBuilder()

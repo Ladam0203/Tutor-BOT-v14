@@ -19,6 +19,7 @@ module.exports = {
         const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
         ticketLogs[id] = 
         {
+            id: id,
             visibleTo: visibleTo,
             openedBy: openedBy,
             openedAt: new Date(),
@@ -30,13 +31,44 @@ module.exports = {
         fs.writeFileSync(ticketLogsPath, JSON.stringify(ticketLogs, null, 2));
     },
 
+    update(ticketLog) {
+        const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
+        ticketLogs[ticketLog.id] = {
+            visibleTo: ticketLog.visibleTo,
+            openedBy: ticketLog.openedBy,
+            openedAt: ticketLog.openedAt,
+            claimedBy: ticketLog.claimedBy,
+            claimedAt: ticketLog.claimedAt,
+            closedBy: ticketLog.closedBy,
+            closedAt: ticketLog.closedAt
+        }
+        fs.writeFileSync(ticketLogsPath, JSON.stringify(ticketLogs, null, 2));
+    },
+
     get(id) { //TODO
         const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
-        return null;
+        return ticketLogs[id];
     },
 
     getAll() { //TODO
         const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
         return null;
+    },
+
+    makeTicketId() {
+        //TODO: Keep in mind that id's have to be unique as they are logged
+        var length = 5;
+        var result           = '';
+        var characters       = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+          result += characters.charAt(Math.floor(Math.random() * 
+     charactersLength));
+       }
+       return result;
+    },
+
+    IdFromChannelName(channelName) {
+        return channelName.split("-")[1];
     }
 }
