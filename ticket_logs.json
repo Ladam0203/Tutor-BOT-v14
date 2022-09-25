@@ -1,9 +1,12 @@
 {
-  "cc3l8": {
-    "id": "cc3l8",
-    "visibleTo": "1011593669586976789",
+  "4irlo": {
+    "id": "4irlo",
+    "visibleTo": [
+      "270592043473043480",
+      "557965521795022906"
+    ],
     "openedBy": "270592043473043480",
-    "openedAt": "2022-09-25T12:58:01.189Z",
+    "openedAt": "2022-09-25T13:20:51.106Z",
     "claimedBy": null,
     "claimedAt": null,
     "closedBy": null,

@@ -47,7 +47,7 @@ module.exports = {
             }
             let tutorRole = await interaction.guild.roles.cache.find(r => r.name === 'Tutor');
             //Check if tutor or tutor(s) is already part of the ticket
-            if (interaction.channel.permissionsFor(tutorRole).has([PermissionsBitField.Flags.ViewChannel]))
+            if (interaction.channel.permissionsFor(tutorRole) && interaction.channel.permissionsFor(tutorRole).has([PermissionsBitField.Flags.ViewChannel]))
             {
                 interaction.reply(asEmbed("The ticket is already visible to all tutors!", true))
                 return;
@@ -92,7 +92,7 @@ module.exports = {
             }
             else { //Tutor
                 let tutor = await interaction.client.users.fetch(id);
-                if (interaction.channel.permissionsFor(tutor).has([PermissionsBitField.Flags.ViewChannel]))
+                if (interaction.channel.permissionsFor(tutor) && interaction.channel.permissionsFor(tutor).has([PermissionsBitField.Flags.ViewChannel]))
                 {
                     interaction.reply(asEmbed("The ticket is already visible to " + tutor.toString() + "!", true))
                     return;
