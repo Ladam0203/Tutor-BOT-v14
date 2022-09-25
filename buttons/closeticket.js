@@ -1,5 +1,5 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle} = require('discord.js');
-const { token, openTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('../config.json');
+const { openTicketsCategoryName, closedTicketsCategoryName, serverBotCategoryName } = require('../config.json');
 const ticketLogger = require("../ticket-logger.js")
 
 const {isTutor, isCategoryFull, deleteChannelsInCategory, findChannel, asEmbed} = require("../util.js")

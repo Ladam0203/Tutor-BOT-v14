@@ -56,7 +56,7 @@ module.exports = {
             //ACTIONS
 
             let id = interaction.options.getString("tutor");
-            let ticketPingsChannel = interaction.guild.channels.cache.find(c => c.name === ticketPingsChannelName);//add ticket pings channel to config, get the string from config in openticket
+            let ticketPingsChannel = await interaction.guild.channels.cache.find(c => c.name === ticketPingsChannelName);//add ticket pings channel to config, get the string from config in openticket
 
             if (id === tutorRole.id) { //Tutor ROLE
                 //Tutors added, only those should be mentioned, who cannot see the ticket. Would this include administrators?
@@ -99,7 +99,7 @@ module.exports = {
                 }
 
                 interaction.channel.permissionOverwrites.create(tutor, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
-                //TODO: Update log
+                //Update log
                 let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name))
                 ticketLog.visibleTo.push(id)
                 ticketLogger.update(ticketLog);
