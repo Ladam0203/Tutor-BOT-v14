@@ -46,14 +46,9 @@ module.exports = {
         fs.writeFileSync(ticketLogsPath, JSON.stringify(ticketLogs, null, 2));
     },
 
-    get(id) { //TODO
+    get(id) {
         const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
         return ticketLogs[id];
-    },
-
-    getAll() { //TODO
-        const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
-        return null;
     },
 
     makeTicketId() {
