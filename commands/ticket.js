@@ -63,24 +63,23 @@ module.exports = {
                 let tutors = await interaction.guild.members.fetch()
                     .then(members=>
                         members.filter(member=>member.roles.cache.some(role => role.id === tutorRole.id)));
-                //TODO: Please include mods as well somehow pls :C
-                let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name))
-                let newTutors = tutors.filter(tutor => !ticketLog.visibleTo.includes(tutor.id));
-                /*
+                
+                let newTutors = [];
+                
                 //Old way
                 for (let i = 0; i < tutors.size; i++) {
                     let permissions = interaction.channel.permissionsFor(tutors.at(i));
-                    console.log(permissions);
                     
-                    if (!permissions.has([PermissionsBitField.Flags.ViewChannel])) {
+                    if (!permissions.has([PermissionsBitField.Flags.ViewChannel], false)) {
                         newTutors.push(tutors.at(i))
                     }
                 }
-                */
+                
 
                 //Update log with new visibleTo
-            ticketLog.visibleTo = tutorRole.id
-            ticketLogger.update(ticketLog);
+                let ticketLog = ticketLogger.get(ticketLogger.IdFromChannelName(interaction.channel.name))
+                ticketLog.visibleTo = tutorRole.id
+                ticketLogger.update(ticketLog);
 
                 //Set the new visibility
                 interaction.channel.permissionOverwrites.create(tutorRole, { ViewChannel: true }); //I really hoped that this accepts only id's, nope
