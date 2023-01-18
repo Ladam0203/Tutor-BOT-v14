@@ -51,6 +51,11 @@ module.exports = {
         return ticketLogs[id];
     },
 
+    getAll() {
+        const ticketLogs = JSON.parse(fs.readFileSync(ticketLogsPath));
+        return ticketLogs;
+    },
+
     makeTicketId() {
         //TODO: Keep in mind that id's have to be unique as they are logged
         var length = 5;
